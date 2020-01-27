@@ -1,5 +1,5 @@
 {
-  "name": "kray",
+  "name": "ABSO",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,7 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "dotenv": "^8.2.0"
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.2"
