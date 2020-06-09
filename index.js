@@ -15,18 +15,20 @@ client.on('message', msg => {
   //if(msg.content.startsWith()){
   //}
   if (msg.content === 'Ciao') {
-    msg.channel.send('Ciao5')
+    msg.channel.send('Ciao6')
   }
   if(msg.member.hasPermission(['KICK_MEMBERS', 'BAN_MEMBERS'])){
     if (msg.content.startsWith('SpamTag')) {
-      var i;
       const member = msg.mentions.members.first()
-      for (i = 0; i < 100; i++) {
-        //msg.reply(`${member.reply}`)
-        msg.channel.send(`${member}`);
-        //get tag() {
-        // return `${this.username}#${this.discriminator}`;
-        //}
+      if(member!=null){
+        var i;
+        for (i = 0; i < 100; i++) {
+          //msg.reply(`${member.reply}`)
+          msg.channel.send(`${member}`);
+          //get tag() {
+          // return `${this.username}#${this.discriminator}`;
+          //}
+        } 
       }
     }
   }
