@@ -36,11 +36,7 @@ client.on('message', msg => {
       if(member!=null){
         var i;
         for (i = 0; i < 2500; i++) {
-          //msg.reply(`${member.reply}`)
           msg.channel.send(`${member}`);
-          //get tag() {
-          // return `${this.username}#${this.discriminator}`;
-          //}
         } 
       }
     }
