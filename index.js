@@ -15,7 +15,7 @@ client.on('message', msg => {
   //if(msg.content.startsWith()){
   //}
   if (msg.content === 'Ciao') {
-    msg.channel.send('Ciao')
+    msg.channel.send('Ciao5')
   }
   if(msg.member.hasPermission(['KICK_MEMBERS', 'BAN_MEMBERS'])){
     if (msg.content.startsWith('SpamTag')) {
