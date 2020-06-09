@@ -9,11 +9,10 @@ client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`))
 client.login(process.env.DISCORD_TOKEN);
 
 client.on('message', msg => {
-  if (msg.content === 'ping') {
-    msg.reply('Pongtt!')
+  if (msg.content === 'Ping') {
+    msg.reply(`Pong`);
   }
   //if(msg.content.startsWith()){
-
   //}
   if (msg.content === 'Ciao') {
     msg.channel.send('Ciao')
