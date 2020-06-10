@@ -16,7 +16,7 @@ client.on('message', msg => {
     msg.send(`${favourite_song} obviously`);
   }
   if (msg.content === 'Ciao') {
-    msg.channel.send('Ciao');
+    msg.channel.send('Ciao');// senza punto e virgola spamma
   }
   if (msg.content === `${prefix}ping`) {
     msg.send('Pong');
