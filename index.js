@@ -12,13 +12,13 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.on('message', msg => {
   if (msg.content === 'Favourite song?') {
-    msg.send(`${favourite_song} obviously`);
+    msg.channel.send(`${favourite_song} obviously`);
   }
   if (msg.content === 'Ciao') {
-    msg.send('Ciao');// senza punto e virgola spamma
+    msg.channel.send('Ciao');// senza punto e virgola spamma
   }
   if (msg.content === `${prefix}ping`) {
-    msg.send('Pong');
+    msg.channel.send('Pong');
   }
   //if(msg.content.startsWith()){
   //}
