@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const Discord = require('discord.js')
 //const {prefix, favourite_song}=require('./config.json');
+const {prefix}=require('./config.json');
 //const config = require('./config.json');
 const client = new Discord.Client()
 
@@ -12,16 +13,16 @@ client.login(process.env.DISCORD_TOKEN);
 client.on('message', msg => {
   if (msg.content === 'Favourite song?') {
     var favourite_song='Maroon 5 - Animals';
-    msg.reply(`${favourite_song}`);
+    msg.send(`${favourite_song} obviously`);
   }
-  if (msg.content === 'Ping') {
-    msg.reply('Pong');
+  if (msg.content === 'Ciao') {
+    msg.channel.send('Ciao');
+  }
+  if (msg.content === `${prefix}ping`) {
+    msg.send('Pong');
   }
   //if(msg.content.startsWith()){
   //}
-  if (msg.content === 'Ciao') {
-    msg.channel.send('Ciao')
-  }
   if(msg.member.hasPermission(['KICK_MEMBERS', 'BAN_MEMBERS'])){
     if (msg.content.startsWith('SpamTag')) {
       const member = msg.mentions.members.first()
