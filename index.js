@@ -15,8 +15,8 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.on('message', msg => {
   //if (!message.content.startsWith(prefix) || message.author.bot) return;
-  if (message.content.startsWith(prefix)){
-    const args = message.content.slice(prefix.length).split(' ');
+  if (msg.content.startsWith(prefix)){
+    const args = msg.content.slice(prefix.length).split(' ');
     const command = args.shift().toLowerCase();
     //else if (command === 'args-info') {
     //  if (!args.length) {
@@ -32,15 +32,15 @@ client.on('message', msg => {
       msg.channel.send('I created the base for all what you need to do!');
     }else if(command === 'createlist'||command==='cl'){
       if (!args.length) {
-        return message.channel.send(`You didn't provide any arguments, ${message.author}! Pls add a name for the lis`);
+        return msg.channel.send(`You didn't provide any arguments, ${msg.author}! Pls add a name for the list`);
       }
     }else if(command === 'Buongiorno'){
       if(!args.length){
-        return message.channel.send('A chi?');
+        return msg.channel.send('A chi?');
       }else if (args[0] === 'ABSO') {
-        return message.channel.send('No vabbè mi ha salutato non ci credo');
+        return msg.channel.send('No vabbè mi ha salutato non ci credo');
       }
-      message.channel.send(`First argument: ${args[0]}`);
+      msg.channel.send(`First argument: ${args[0]}`);
     }
   }else{
     if (msg.content === 'Canzone preferita?') {
