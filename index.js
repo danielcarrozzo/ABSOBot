@@ -14,7 +14,16 @@ client.on('message', msg => {
   if (msg.content === 'Favourite song?') {
     msg.channel.send(`${favourite_song} obviously`);
   }
-  if (msg.content === 'Ciao!') {
+  if (msg.content === 'Dove sono?') {
+    msg.channel.send(`In un luogo magico e fatato chiamato ${msg.guild.name}`);
+  }
+  if (msg.content === 'Dimmi di più su questo regno') {
+    msg.channel.send(`È stato creato il ${msg.guild.createdAt} e nel globo è collocato in ${msg.guild.region}`);
+  }
+  if (msg.content === 'Quanti siamo qua dentro?') {
+    msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
+  }
+  if (msg.content.startsWith === `${prefix}aiuto`) {
     msg.channel.send('Hey ciao amor! Questi al momento sono i miei comandi:\n');// senza punto e virgola spamma
   }
   if (msg.content === `${prefix}ping`) {
@@ -22,7 +31,7 @@ client.on('message', msg => {
   }
   //if(msg.content.startsWith()){
   //}
-  if(msg.member.hasPermission(['KICK_MEMBERS', 'BAN_MEMBERS'])){
+  if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
     if (msg.content.startsWith('SpamTag')) {
       const member = msg.mentions.members.first()
       if(member!=null){
