@@ -34,13 +34,18 @@ client.on('message', msg => {
       if (!args.length) {
         return msg.channel.send(`You didn't provide any arguments, ${msg.author}! Pls add a name for the list`);
       }
-    }else if(command === 'Buongiorno'){
+      msg.channel.send(`First argument: ${args[0]}`);
+    }else if(command === 'buongiorno'){
       if(!args.length){
         return msg.channel.send('A chi?');
       }else if (args[0] === 'ABSO') {
         return msg.channel.send('No vabbè mi ha salutato non ci credo');
       }
-      msg.channel.send(`First argument: ${args[0]}`);
+      msg.channel.send(`Buongiorno ${args[0]}`);
+    }else if (command === 'aiuto') {
+      return msg.channel.send('Hey ciao amor! Questi al momento sono i miei comandi:\n');// senza punto e virgola spamma
+    }else if (command === 'ping') {
+      return msg.channel.send('Pong');
     }
   }else{
     if (msg.content === 'Canzone preferita?') {
@@ -67,12 +72,6 @@ client.on('message', msg => {
     }
     if (msg.content === 'Quanti siamo qua dentro?') {
       msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
-    }
-    if (msg.content.startsWith === `${prefix}aiuto`) {
-      msg.channel.send('Hey ciao amor! Questi al momento sono i miei comandi:\n');// senza punto e virgola spamma
-    }
-    if (msg.content === `${prefix}ping`) {
-      msg.channel.send('Pong');
     }
     //if(msg.content.startsWith()){
     //}
