@@ -1,8 +1,8 @@
 require("dotenv").config();
 
 const Discord = require('discord.js')
-//const {prefix, favourite_song}=require('./config.json');
-const {prefix}=require('./config.json');
+const { prefix, favourite_song } = require('./config.json');
+//const {prefix}=require('./config.json');
 //const config = require('./config.json');
 const client = new Discord.Client()
 
@@ -12,7 +12,6 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.on('message', msg => {
   if (msg.content === 'Favourite song?') {
-    var favourite_song='Maroon 5 - Animals';
     msg.send(`${favourite_song} obviously`);
   }
   if (msg.content === 'Ciao') {
