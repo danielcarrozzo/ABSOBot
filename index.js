@@ -11,15 +11,16 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.on('message', msg => {
   if (msg.content === 'Favourite song?') {
+    var favourite_song='Maroon 5 - Animals';
     msg.reply(`${favourite_song}`);
   }
   if (msg.content === 'Ping') {
-    msg.reply(`Pong`);
+    msg.reply('Pong');
   }
   //if(msg.content.startsWith()){
   //}
   if (msg.content === 'Ciao') {
-    msg.channel.send('Ciao7')
+    msg.channel.send('Ciao')
   }
   if(msg.member.hasPermission(['KICK_MEMBERS', 'BAN_MEMBERS'])){
     if (msg.content.startsWith('SpamTag')) {
