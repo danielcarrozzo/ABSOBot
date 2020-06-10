@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const Discord = require('discord.js')
-const {prefix, favourite_song}=require('./config.json');
+//const {prefix, favourite_song}=require('./config.json');
 //const config = require('./config.json');
 const client = new Discord.Client()
 
