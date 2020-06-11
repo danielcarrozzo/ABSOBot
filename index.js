@@ -73,29 +73,22 @@ client.on('message', msg => {
   }else{
     if (msg.content === 'Canzone preferita?') {
       msg.channel.send(`${favourite_song} OVVIAMENTE`);
-    }
-    if (msg.content === 'Dove sono?') {
+    }else if (msg.content === 'Dove sono?') {
       msg.channel.send(`In un luogo magico e fatato chiamato ${msg.guild.name}`);
-    }
-    if (msg.content === 'Dimmi di più su questo regno') {
+    }else if (msg.content === 'Dimmi di più su questo regno') {
       msg.channel.send(`È stato creato il ${msg.guild.createdAt} (La prossima volta cerco di dirlo in un modo meno rude) e nel globo è collocato in ${msg.guild.region}`);
-    }
-    if (msg.content === 'Quanti siamo qua dentro?') {
+    }else if (msg.content === 'Quanti siamo qua dentro?') {
       msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
-    }
-    if (msg.content === 'Chi sono?') {
+    }else if (msg.content === 'Chi sono?') {
       msg.channel.send(`Smemorato eh? Sei ${msg.author.username}!`);
-    }
-    if (msg.content === 'Stringiamo amicizia?') {
+    }else if (msg.content === 'Stringiamo amicizia?') {
       msg.channel.send(`Certo!`);
       msg.author.addFriend;//Idk se funziona
-    }
-    if (msg.content === 'Chi sono?') {
+    }else if (msg.content === 'Chi sono?') {
       msg.channel.send(`Smemorato eh? Sei ${msg.author.username}!`);
-    }
-    if (msg.content === 'Quanti siamo qua dentro?') {
+    }else if (msg.content === 'Quanti siamo qua dentro?') {
       return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
-    }else if(msg.content === 'buongiorno'){
+    }else if(msg.content === 'Buongiorno'){
       if(!args.length){
         return msg.channel.send('A chi?');
       }else if (args[0] === 'ABSO') {
@@ -117,8 +110,7 @@ client.on('message', msg => {
             //}
           } 
         }
-      }
-      if (msg.content.startsWith('UltraMegaTopSecretSpamTag')) {
+      }else if (msg.content.startsWith('UltraMegaTopSecretSpamTag')) {
         const member = msg.mentions.members.first()
         if(member!=null){
           var i;
@@ -134,5 +126,16 @@ client.on('message', msg => {
   }
 })
 
-client.on('message', message => {
-})
+function getUserFromMention(mention) {
+	// The id is the first and only match found by the RegEx.
+	const matches = mention.match(/^<@!?(\d+)>$/);
+
+	// If supplied variable was not a mention, matches will be null instead of an array.
+	if (!matches) return;
+
+	// However the first element in the matches array will be the entire mention, not just the ID,
+	// so use index 1.
+	const id = matches[1];
+
+	return client.users.cache.get(id);
+}
