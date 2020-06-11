@@ -15,8 +15,9 @@ client.login(process.env.DISCORD_TOKEN);
 
 client.on('message', msg => {
   //if (!message.content.startsWith(prefix) || message.author.bot) return;
+  // i msg.channel.send vanno bene anche senza return
   if (msg.content.startsWith(prefix)){
-    const args = msg.content.slice(prefix.length).split(' ');
+    const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     const command = args.shift().toLowerCase();
     //else if (command === 'args-info') {
     //  if (!args.length) {
@@ -27,25 +28,35 @@ client.on('message', msg => {
 	  //  }
     //  message.channel.send(`Command name: ${command}\nArguments: ${args}`);
     //}
-    if(command === 'create'||command=== 'c'){
-      //creare il tutto
-      msg.channel.send('I created the base for all what you need to do!');
-    }else if(command === 'createlist'||command==='cl'){
-      if (!args.length) {
-        return msg.channel.send(`You didn't provide any arguments, ${msg.author}! Pls add a name for the list`);
-      }
-      msg.channel.send(`First argument: ${args[0]}`);
-    }else if(command === 'buongiorno'){
-      if(!args.length){
-        return msg.channel.send('A chi?');
-      }else if (args[0] === 'ABSO') {
-        return msg.channel.send('No vabbè mi ha salutato non ci credo');
-      }
-      msg.channel.send(`Buongiorno ${args[0]}`);
-    }else if (command === 'aiuto') {
+    if (command === 'aiuto') {
       return msg.channel.send('Hey ciao amor! Questi al momento sono i miei comandi:\n');// senza punto e virgola spamma
     }else if (command === 'ping') {
       return msg.channel.send('Pong');
+    }
+    if(message.member.hasPermission('ADMINISTRATOR')){
+      if(command === 'create'||command=== 'c'){
+      //creare il tutto
+        msg.channel.send('I created the base for all what you need to do!');
+      }else if(command === 'createlist'||command==='cl'){
+        if (!args.length) {
+          return msg.channel.send(`You didn't provide any arguments, ${msg.author}! Pls add a name for the list`);
+        }
+        msg.channel.send(`First argument: ${args[0]}`);
+      }
+    }
+    if(message.member.hasPermission('KICK_MEMBERS')){
+      if (command === 'kick') {
+        const member = message.mentions.members.first()
+        if (!member) {//if (!message.mentions.users.size) {Since message.mentions.users is a Collection, it has a .size property. If no users are mentioned, it'll return 0 (which is a falsy value), meaning you can do if (!value) to check if it's falsy.
+          return message.reply(`Who are you trying to kick? You must mention a user.`)
+        }else if (!member.kickable) {
+          return message.reply(`I can't kick this user. Sorry!`)
+        }
+        return member
+          .kick()
+          .then(() => message.reply(`${member.user.tag} was kicked.`))
+          .catch(error => message.reply(`Sorry, an error occured.`))
+      }
     }
   }else{
     if (msg.content === 'Canzone preferita?') {
@@ -71,11 +82,17 @@ client.on('message', msg => {
       msg.channel.send(`Smemorato eh? Sei ${msg.author.username}!`);
     }
     if (msg.content === 'Quanti siamo qua dentro?') {
-      msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
-    }
+      return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
+    }else if(msg.content === 'buongiorno'){
+      if(!args.length){
+        return msg.channel.send('A chi?');
+      }else if (args[0] === 'ABSO') {
+        return msg.channel.send('No vabbè mi ha salutato non ci credo');
+      }
+      return msg.channel.send(`Buongiorno ${args[0]}`);
     //if(msg.content.startsWith()){
     //}
-    if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
+    }else if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
       if (msg.content.startsWith('SpamTag')) {
         const member = msg.mentions.members.first()
         if(member!=null){
@@ -93,7 +110,7 @@ client.on('message', msg => {
         const member = msg.mentions.members.first()
         if(member!=null){
           var i;
-          for (i = 0; i < 2500; i++) {
+          for (i = 0; i < 10000; i++) {
             msg.channel.send(`${member}`);
           } 
         }
@@ -106,19 +123,4 @@ client.on('message', msg => {
 })
 
 client.on('message', message => {
-  if(message.member.hasPermission(['KICK_MEMBERS', 'BAN_MEMBERS'])){
-    if (message.content.startsWith('!kick')) {
-      const member = message.mentions.members.first()
-  
-      if (!member) {
-        return message.reply(`Who are you trying to kick? You must mention a user.`)
-      }else if (!member.kickable) {
-        return message.reply(`I can't kick this user. Sorry!`)
-      }
-      return member
-        .kick()
-        .then(() => message.reply(`${member.user.tag} was kicked.`))
-        .catch(error => message.reply(`Sorry, an error occured.`))
-    }
-  }
 })
