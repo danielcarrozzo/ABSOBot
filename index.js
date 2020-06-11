@@ -40,7 +40,7 @@ client.on('message', msg => {
       const avatarList = msg.mentions.users.map(user => {
         return `${user.username}'s avatar: <${user.displayAvatarURL({ format: "png", dynamic: true })}>`;
       });
-      msg.channel.send(avatarList);
+      return msg.channel.send(avatarList);
     }
     if(message.member.hasPermission('ADMINISTRATOR')){
       if(command === 'create'||command=== 'c'){
@@ -89,16 +89,15 @@ client.on('message', msg => {
     }else if (msg.content === 'Quanti siamo qua dentro?') {
       return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
     }else if(msg.content === 'Buongiorno'){
-      const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
-      const command = args.shift().toLowerCase();
+      const args = message.content.split(/ +/);
       if(!args.length){
         return msg.channel.send('A chi?');
       }else if (args[0] === 'ABSO') {
         return msg.channel.send('No vabbè mi ha salutato non ci credo');
       }
       return msg.channel.send(`Buongiorno ${args[0]}`);
-    //if(msg.content.startsWith()){
-    //}
+      //if(msg.content.startsWith()){
+      //}
     }else if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
       if (msg.content.startsWith('SpamTag')) {
         const member = msg.mentions.members.first()
