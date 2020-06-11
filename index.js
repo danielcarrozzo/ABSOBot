@@ -19,6 +19,7 @@ client.on('message', msg => {
   if (msg.content.startsWith(prefix)){
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     const command = args.shift().toLowerCase();
+    var message=msg;
     //else if (command === 'args-info') {
     //  if (!args.length) {
     //    return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
@@ -32,6 +33,10 @@ client.on('message', msg => {
       return msg.channel.send('Hey ciao amor! Questi al momento sono i miei comandi:\n');// senza punto e virgola spamma
     }else if (command === 'ping') {
       return msg.channel.send('Pong');
+    }else if(command==='avatar'){
+      if (!msg.mentions.users.size) {
+        return message.channel.send(`Your avatar: <${message.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
+      }
     }
     if(message.member.hasPermission('ADMINISTRATOR')){
       if(command === 'create'||command=== 'c'){
