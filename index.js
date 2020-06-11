@@ -37,6 +37,10 @@ client.on('message', msg => {
       if (!msg.mentions.users.size) {
         return message.channel.send(`Your avatar: <${message.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
       }
+      const avatarList = message.mentions.users.map(user => {
+        return `${user.username}'s avatar: <${user.displayAvatarURL({ format: "png", dynamic: true })}>`;
+      });
+      message.channel.send(avatarList);
     }
     if(message.member.hasPermission('ADMINISTRATOR')){
       if(command === 'create'||command=== 'c'){
@@ -51,8 +55,11 @@ client.on('message', msg => {
     }
     if(message.member.hasPermission('KICK_MEMBERS')){
       if (command === 'kick') {
+        //if (!message.mentions.users.size) {
+        //  return message.reply('you need to tag a user in order to kick them!');
+        //}
         const member = message.mentions.members.first()
-        if (!member) {//if (!message.mentions.users.size) {Since message.mentions.users is a Collection, it has a .size property. If no users are mentioned, it'll return 0 (which is a falsy value), meaning you can do if (!value) to check if it's falsy.
+        if (!member) {
           return message.reply(`Who are you trying to kick? You must mention a user.`)
         }else if (!member.kickable) {
           return message.reply(`I can't kick this user. Sorry!`)
