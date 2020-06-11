@@ -90,13 +90,13 @@ client.on('message', msg => {
       return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
     }else if(msg.content.startsWith('Buongiorno')){
       msg.channel.send('Ciao');
-      const args = message.content.split(/ +/);
-      if(!args.length){
+      const args2 = message.content.split(/ +/);
+      if(!args2.length){
         return msg.channel.send('A chi?');
-      }else if (args[0] === 'ABSO') {
+      }else if (args2[0] === 'ABSO') {
         return msg.channel.send('No vabbè mi ha salutato non ci credo');
       }
-      return msg.channel.send(`Buongiorno ${args[0]}`);
+      return msg.channel.send(`Buongiorno ${args2[0]}`);
       //if(msg.content.startsWith()){
       //}
     }else if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
