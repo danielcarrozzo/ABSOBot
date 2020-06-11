@@ -35,12 +35,12 @@ client.on('message', msg => {
       return msg.channel.send('Pong');
     }else if(command==='avatar'){
       if (!msg.mentions.users.size) {
-        return message.channel.send(`Your avatar: <${message.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
+        return msg.channel.send(`Your avatar: <${msg.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
       }
-      const avatarList = message.mentions.users.map(user => {
+      const avatarList = msg.mentions.users.map(user => {
         return `${user.username}'s avatar: <${user.displayAvatarURL({ format: "png", dynamic: true })}>`;
       });
-      message.channel.send(avatarList);
+      msg.channel.send(avatarList);
     }
     if(message.member.hasPermission('ADMINISTRATOR')){
       if(command === 'create'||command=== 'c'){
