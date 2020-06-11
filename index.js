@@ -89,6 +89,8 @@ client.on('message', msg => {
     }else if (msg.content === 'Quanti siamo qua dentro?') {
       return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
     }else if(msg.content === 'Buongiorno'){
+      const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
+      const command = args.shift().toLowerCase();
       if(!args.length){
         return msg.channel.send('A chi?');
       }else if (args[0] === 'ABSO') {
