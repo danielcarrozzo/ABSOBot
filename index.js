@@ -89,6 +89,7 @@ client.on('message', msg => {
     }else if (msg.content === 'Quanti siamo qua dentro?') {
       return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
     }else if(msg.content.startsWith('Buongiorno')){
+      msg.channel.send('Ciao');
       const args = message.content.split(/ +/);
       if(!args.length){
         return msg.channel.send('A chi?');
