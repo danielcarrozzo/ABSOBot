@@ -27,9 +27,9 @@ client.on('message', msg => {
   //if (!message.content.startsWith(prefix) || message.author.bot) return;
   // i msg.channel.send vanno bene anche senza return
   if (msg.content.startsWith(prefix)){
+    var message=msg;
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     const command = args.shift().toLowerCase();
-    var message=msg;
     if (!client.commands.has(command)) return;
     try {
       client.commands.get(command).execute(message, args);

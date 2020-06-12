@@ -2,6 +2,7 @@ module.exports = {
 	name: 'prune',
 	description: 'Delete some messages',
 	execute(message, args) {//just if you can manage messages
+        var msg=message;
         const amount = parseInt(args[0]);//for 2-100 an 1-99 problem you can also add a +1 here
       
         if (isNaN(amount)) {
