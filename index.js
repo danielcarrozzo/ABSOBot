@@ -89,14 +89,15 @@ client.on('message', msg => {
     }else if (msg.content === 'Quanti siamo qua dentro?') {
       return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
     }else if(msg.content.startsWith('Buongiorno')){
-      msg.channel.send('Ciao');
-      const args = msg.content.split(/*' '*// +/);//regex: regular expression
-      if(!args.length){
-        return msg.channel.send('A chi?');
-      }else if (args[0] === 'ABSO') {
-        return msg.channel.send('No vabbè mi ha salutato non ci credo');
+      if(!byTheBot(msg)){
+        const args = msg.content.split(/*' '*// +/);//regex: regular expression
+        if(!args.length){
+          return msg.channel.send('A chi?');
+        }else if (args[0] === 'ABSO') {
+          return msg.channel.send('No vabbè mi ha salutato non ci credo');
+        }
+        return msg.channel.send(`Buongiorno ${args[0]}`);
       }
-      return msg.channel.send(`Buongiorno ${args[0]}`);
     //if(msg.content.startsWith()){
     //}
       //const args2 = message.content.slice().split(/ +/);
@@ -136,6 +137,10 @@ client.on('message', msg => {
     }
   }
 })
+
+function byTheBot(msg){
+  return msg.author.bot;
+}
 
 function getUserFromMention(mention) {
 	// The id is the first and only match found by the RegEx.
