@@ -33,6 +33,9 @@ client.on('message', msg => {
     const commandName /*command */= args.shift().toLowerCase();
     if (!client.commands.has(/*command*/commandName)) return;
     const command = client.commands.get(commandName);
+    if (command.guildOnly && message.channel.type !== 'text') {
+      return message.reply('I can\'t execute that command inside DMs!');
+    }
     try {
       //client.commands.get(command).execute(message, args);
       command.execute(message, args);

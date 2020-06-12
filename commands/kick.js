@@ -1,6 +1,7 @@
 module.exports = {
 	name: 'kick',
-	description: 'How cya dudes and gurls',
+  description: 'How cya dudes and gurls',
+  guildOnly: 'true',
 	execute(message, args) {//solo se hai KICK
         var msg=message;
         const member = message.mentions.members.first()
