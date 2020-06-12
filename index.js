@@ -1,17 +1,27 @@
 require("dotenv").config();
 
+const fs = require('fs');
 const Discord = require('discord.js')
 const { prefix, favourite_song } = require('./config.json');
 //const {prefix}=require('./config.json');
 //const config = require('./config.json');
-const client = new Discord.Client()
+const client = new Discord.Client();
+client.commands = new Discord.Collection();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));//This next step is how you'll dynamically retrieve all your newly created command files. Add this below your client.commands line:
+
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+	// set a new item in the Collection
+	// with the key as the command name and the value as the exported module
+	client.commands.set(command.name, command);//Faccio una specie di hashmap con chiave (nome comando dentro il file) e file
+}
+
+client.login(process.env.DISCORD_TOKEN);
 
 //client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`))
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 })
-
-client.login(process.env.DISCORD_TOKEN);
 
 client.on('message', msg => {
   //if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -20,55 +30,12 @@ client.on('message', msg => {
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     const command = args.shift().toLowerCase();
     var message=msg;
-    //else if (command === 'args-info') {
-    //  if (!args.length) {
-    //    return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
-    //  }//Looks good! Don't worry about the comma separation; that's the expected output when trying to send an array as a string.
-    //  else if (args[0] === 'foo') {
-		//    return message.channel.send('bar');
-	  //  }
-    //  message.channel.send(`Command name: ${command}\nArguments: ${args}`);
-    //}
-    if (command === 'aiuto') {
-      return msg.channel.send('Hey ciao amor! Questi al momento sono i miei comandi:\n');// senza punto e virgola spamma
-    }else if (command === 'ping') {
-      return msg.channel.send('Pong');
-    }else if(command==='avatar'){
-      if (!msg.mentions.users.size) {
-        return msg.channel.send(`Your avatar: <${msg.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
-      }
-      const avatarList = msg.mentions.users.map(user => {
-        return `${user.username}'s avatar: <${user.displayAvatarURL({ format: "png", dynamic: true })}>`;
-      });
-      return msg.channel.send(avatarList);
-    }
-    if(message.member.hasPermission('ADMINISTRATOR')){
-      if(command === 'create'||command=== 'c'){
-      //creare il tutto
-        msg.channel.send('I created the base for all what you need to do!');
-      }else if(command === 'createlist'||command==='cl'){
-        if (!args.length) {
-          return msg.channel.send(`You didn't provide any arguments, ${msg.author}! Pls add a name for the list`);
-        }
-        msg.channel.send(`First argument: ${args[0]}`);
-      }
-    }
-    if(message.member.hasPermission('KICK_MEMBERS')){
-      if (command === 'kick') {
-        //if (!message.mentions.users.size) {
-        //  return message.reply('you need to tag a user in order to kick them!');
-        //}
-        const member = message.mentions.members.first()
-        if (!member) {
-          return message.reply(`Who are you trying to kick? You must mention a user.`)
-        }else if (!member.kickable) {
-          return message.reply(`I can't kick this user. Sorry!`)
-        }
-        return member
-          .kick()
-          .then(() => message.reply(`${member.user.tag} was kicked.`))
-          .catch(error => message.reply(`Sorry, an error occured.`))
-      }
+    if (!client.commands.has(command)) return;
+    try {
+      client.commands.get(command).execute(message, args);
+    } catch (error) {
+      console.error(error);
+      message.reply('there was an error trying to execute that command!');
     }
   }else{
     if (msg.content === 'Canzone preferita?') {
@@ -98,17 +65,6 @@ client.on('message', msg => {
         }
         return msg.channel.send(`Buongiorno ${args[1]}`);
       }
-    //if(msg.content.startsWith()){
-    //}
-      //const args2 = message.content.slice().split(/ +/);
-      //if(!args2.length){
-      //  return msg.channel.send('A chi?');
-      //}else if (args2[0] === 'ABSO') {
-      //  return msg.channel.send('No vabbè mi ha salutato non ci credo');
-      //}
-      //return msg.channel.send(`Buongiorno ${args2[0]}`);
-      //if(msg.content.startsWith()){
-      //}
     }else if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
       if (msg.content.startsWith('SpamTag')) {
         const member = msg.mentions.members.first()
