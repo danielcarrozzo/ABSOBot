@@ -91,12 +91,12 @@ client.on('message', msg => {
     }else if(msg.content.startsWith('Buongiorno')){
       if(!byTheBot(msg)){
         const args = msg.content.split(/*' '*// +/);//regex: regular expression
-        if(!args.length){
+        if(args.length==1){
           return msg.channel.send('A chi?');
-        }else if (args[0] === 'ABSO') {
+        }else if (args[1] === 'ABSO') {
           return msg.channel.send('No vabbè mi ha salutato non ci credo');
         }
-        return msg.channel.send(`Buongiorno ${args[0]}`);
+        return msg.channel.send(`Buongiorno ${args[1]}`);
       }
     //if(msg.content.startsWith()){
     //}
@@ -138,7 +138,7 @@ client.on('message', msg => {
   }
 })
 
-function byTheBot(msg){
+function byTheBot(msg){//funziona!
   return msg.author.bot;
 }
 
