@@ -29,10 +29,13 @@ client.on('message', msg => {
   if (msg.content.startsWith(prefix)){
     var message=msg;
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
-    const command = args.shift().toLowerCase();
-    if (!client.commands.has(command)) return;
+    //const command = args.shift().toLowerCase();
+    const commandName /*command */= args.shift().toLowerCase();
+    if (!client.commands.has(/*command*/commandName)) return;
+    const command = client.commands.get(commandName);
     try {
-      client.commands.get(command).execute(message, args);
+      //client.commands.get(command).execute(message, args);
+      command.execute(message, args);
     } catch (error) {
       console.error(error);
       message.reply('there was an error trying to execute that command!');

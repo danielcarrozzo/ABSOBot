@@ -1,5 +1,5 @@
 module.exports = {
-	name: 'avatar',
+    name: 'avatar',
 	description: 'Receive the link of the user avatar',
 	execute(message, args) {
         var msg=message;
