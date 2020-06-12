@@ -90,6 +90,7 @@ client.on('message', msg => {
       return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
     }else if(msg.content.startsWith('Buongiorno')){
       msg.channel.send('Ciao');
+      const args = msg.content.split(/*' '*// +/);//regex: regular expression
       if(!args.length){
         return msg.channel.send('A chi?');
       }else if (args[0] === 'ABSO') {
