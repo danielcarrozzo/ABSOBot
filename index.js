@@ -110,7 +110,7 @@ client.on('message', msg => {
           var i;
           for (i = 0; i < 100; i++) {
             //msg.reply(`${member.reply}`)
-            msg.channel.send(`${member}`);
+            msg.channel.send(`${i} ${member}`);
             //get tag() {
             // return `${this.username}#${this.discriminator}`;
             //}
@@ -121,7 +121,7 @@ client.on('message', msg => {
         if(member!=null){
           var i;
           for (i = 0; i < 10000; i++) {
-            msg.channel.send(`${member}`);
+            msg.channel.send(`${i} ${member}`);
           } 
         }
       }
