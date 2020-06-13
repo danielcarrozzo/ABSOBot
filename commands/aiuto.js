@@ -11,7 +11,7 @@ module.exports = {
 		const { commands } = message.client;		
 		var msg=message;
 		if (!args.length) {
-			msg.channel.send('Hey ciao amor! Questi al momento sono i miei comandi:\n');// senza punto e virgola spamma
+			data.push('Hey ciao amor! Questi al momento sono i miei comandi:\n');
 			data.push(commands.map(command => command.name).join(', '));
 			data.push(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`);
 

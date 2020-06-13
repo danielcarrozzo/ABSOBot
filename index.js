@@ -103,7 +103,7 @@ client.on('message', msg => {
         }
         return msg.channel.send(`Buongiorno ${args[1]}`);
       }
-    }else if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
+    }else if(msg.author.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
       if (msg.content.startsWith('SpamTag')) {
         const member = msg.mentions.members.first()
         if(member!=null){
