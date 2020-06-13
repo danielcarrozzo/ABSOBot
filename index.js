@@ -6,9 +6,11 @@ const { prefix, favourite_song } = require('./config.json');
 //const {prefix}=require('./config.json');
 //const config = require('./config.json');
 const client = new Discord.Client();
+const cooldowns = new Discord.Collection();
+
+//Commands adding
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));//This next step is how you'll dynamically retrieve all your newly created command files. Add this below your client.commands line:
-
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	// set a new item in the Collection
@@ -27,15 +29,43 @@ client.on('message', msg => {
   //if (!message.content.startsWith(prefix) || message.author.bot) return;
   // i msg.channel.send vanno bene anche senza return
   if (msg.content.startsWith(prefix)){
-    var message=msg;
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     //const command = args.shift().toLowerCase();
     const commandName /*command */= args.shift().toLowerCase();
-    if (!client.commands.has(/*command*/commandName)) return;
-    const command = client.commands.get(commandName);
+
+    //Check if it exist
+    //if (!client.commands.has(/*command*/commandName)) return;
+
+    //check Alliases
+    const command = client.commands.get(commandName)
+    	|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    if (!command) return;
+    
+    var message=msg;
+
+    //Check if it can't be used in DMs
     if (command.guildOnly && message.channel.type !== 'text') {
       return message.reply('I can\'t execute that command inside DMs!');
     }
+    
+    //Check if it can be used cause timeslice
+    if (!cooldowns.has(command.name)) {
+      cooldowns.set(command.name, new Discord.Collection());
+    }
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.name);
+    const cooldownAmount = (command.cooldown || 3) * 1000;
+    if (timestamps.has(message.author.id)) {
+      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+    
+      if (now < expirationTime) {
+        const timeLeft = (expirationTime - now) / 1000;
+        return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+      }
+    }
+    timestamps.set(message.author.id, now);
+    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+
     try {
       //client.commands.get(command).execute(message, args);
       command.execute(message, args);
@@ -44,7 +74,9 @@ client.on('message', msg => {
       message.reply('there was an error trying to execute that command!');
     }
   }else{
-    if (msg.content === 'Canzone preferita?') {
+    if (msg.content === 'Fottiti') {
+      msg.channel.send(`Ma vafancul bukina mammt`);
+    }else if (msg.content === 'Canzone preferita?') {
       msg.channel.send(`${favourite_song} OVVIAMENTE`);
     }else if (msg.content === 'Dove sono?') {
       msg.channel.send(`In un luogo magico e fatato chiamato ${msg.guild.name}`);
