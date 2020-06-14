@@ -7,7 +7,6 @@ const { prefix, favourite_song } = require('./config.json');
 //const config = require('./config.json');
 const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
-
 //Commands adding
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));//This next step is how you'll dynamically retrieve all your newly created command files. Add this below your client.commands line:
@@ -54,7 +53,7 @@ client.on('message', msg => {
     }
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
-    const cooldownAmount = (command.cooldown || 3) * 1000;
+    const cooldownAmount = (command.cooldown || 0) * 1000;
     if (timestamps.has(message.author.id)) {
       const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
     
@@ -103,7 +102,7 @@ client.on('message', msg => {
         }
         return msg.channel.send(`Buongiorno ${args[1]}`);
       }
-    }else if(msg.author.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
+    }else/* if(msg.member.hasPermission('ADMINISTRATOR'))*/{//'KICK_MEMBERS', 'BAN_MEMBERS'
       if (msg.content.startsWith('SpamTag')) {
         const member = msg.mentions.members.first()
         if(member!=null){
