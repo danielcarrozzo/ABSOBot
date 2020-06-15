@@ -72,6 +72,13 @@ client.on('message', msg => {
       console.error(error);
       message.reply('there was an error trying to execute that command!');
     }
+
+    message.delete().catch(error => {
+      // Only log the error if it is not an Unknown Message error
+      if (error.code !== 10008/*Discord.Constants.APIErrors.UNKNOWN_MESSAGE */) {
+        console.error('Failed to delete the message:', error);
+      }
+    });
   }else{
     if (msg.content === 'Fottiti') {
       msg.channel.send(`Ma vafancul bukina mammt`);
@@ -102,7 +109,7 @@ client.on('message', msg => {
         }
         return msg.channel.send(`Buongiorno ${args[1]}`);
       }
-    }else/* if(msg.member.hasPermission('ADMINISTRATOR'))*/{//'KICK_MEMBERS', 'BAN_MEMBERS'
+    }else if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
       if (msg.content.startsWith('SpamTag')) {
         const member = msg.mentions.members.first()
         if(member!=null){
@@ -130,6 +137,17 @@ client.on('message', msg => {
     }
   }
 })
+
+//API errors
+process.on('unhandledRejection', error => {
+	console.error('Unhandled promise rejection:', error);
+});
+
+//websocket errors
+client.on('shardError', error => {
+  console.error('A websocket connection encountered an error:', error);
+});
+
 
 function byTheBot(msg){//funziona!
   return msg.author.bot;
