@@ -10,6 +10,7 @@ module.exports = {
           if(args.length==3){
             var fs = require("fs");
             fs.readFileSync("./listes/"+args[0].toString()+'.txt', 'utf8', function (err, data) {
+                msg.channel.send('Ciao');
                 if (err) {
                    return console.error(err);
                 }
