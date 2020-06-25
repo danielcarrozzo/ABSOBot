@@ -5,23 +5,34 @@ module.exports = {
       execute(message, args) {
           var msg=message;
           if (!args) {
-            return msg.channel.send(`You need to specify the list number, the member and the number of points (it could be also negative)Your avatar: <${msg.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
+            return msg.channel.send(`You need to specify the list number, the member and the number of points (it could be also negative)`);
           }
           if(args.length==3){
-            var fs = require("fs");
-            fs.readFileSync("./listes/"+args[0].toString()+'.txt', 'utf8', function (err, data) {
-                msg.channel.send('Ciao');
+            var fs = require('fs');
+            var dataToUse;
+            var content;
+            fs.readFile(/*'./listes/'+args[0]+*/'listes/1.txt', 'utf8', function read(err, data) {
+                msg.channel.send('Ciao1');
                 if (err) {
                    return console.error(err);
                 }
-                const contents = data.split(/*' '*// +/||/\n/);//regex: regular expression
-                for(var i=0; i<contents.length; i++){
-                    msg.channel.send(`${contents[i]}`);
-                }
+                content=data;
+                msg.channel.send(`${content.length}`);
             });
+            console.log(content);
+            //fs.writeFile();
+            //msg.channel.send(dataToUse);
+            //const contents = dataToUse.split(/*' '*// +/||/\n/);//regex: regular expression
+            //for(var i=0; i<contents.length; i++){
+            //    msg.channel.send(`${contents[i]}`);
+            //}
           }else{
             return msg.channel.send(`Too many or too less arguments, it's needed the list number, the member and the number of points (it could be also negative)`);
           }
-          return msg.channel.send(avatarList);
       },
   };
+
+  //function readAll(){
+    
+    //dataToUse=data;
+  //}

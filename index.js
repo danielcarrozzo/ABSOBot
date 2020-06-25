@@ -25,6 +25,7 @@ client.on('ready', () => {
 })
 
 client.on('message', msg => {
+  if (msg.author.bot) return;
   //if (!message.content.startsWith(prefix) || message.author.bot) return;
   // i msg.channel.send vanno bene anche senza return
   if (msg.content.startsWith(prefix)){
@@ -73,12 +74,12 @@ client.on('message', msg => {
       message.reply('there was an error trying to execute that command!');
     }
 
-    message.delete().catch(error => {
-      // Only log the error if it is not an Unknown Message error
-      if (error.code !== 10008/*Discord.Constants.APIErrors.UNKNOWN_MESSAGE */) {
-        console.error('Failed to delete the message:', error);
-      }
-    });
+    //message.delete().catch(error => {
+    //  // Only log the error if it is not an Unknown Message error
+    //  if (error.code !== 10008/*Discord.Constants.APIErrors.UNKNOWN_MESSAGE */) {
+    //    console.error('Failed to delete the message:', error);
+    //  }
+    //});
   }else{
     if (msg.content === 'Fottiti') {
       msg.channel.send(`Ma vafancul bukina mammt`);
