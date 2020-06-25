@@ -9,8 +9,8 @@ module.exports = {
           }
           if(args.length==3){
             var fs = require('fs');
-            var dataToUse;
             var content;
+            var dataToUse;
             fs.readFile(/*'./listes/'+args[0]+*/'listes/1.txt', 'utf8', function read(err, data) {
                 msg.channel.send('Ciao1');
                 if (err) {
@@ -18,8 +18,10 @@ module.exports = {
                 }
                 content=data;
                 msg.channel.send(`${content.length}`);
+                dataToUse=content.split("\n");
             });
-            console.log(content);
+            console.log(dataToUse);
+            msg.channel.send(`${dataToUse}`);
             //fs.writeFile();
             //msg.channel.send(dataToUse);
             //const contents = dataToUse.split(/*' '*// +/||/\n/);//regex: regular expression
