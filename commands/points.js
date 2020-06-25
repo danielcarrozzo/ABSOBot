@@ -12,16 +12,14 @@ module.exports = {
             var content;
             var dataToUse;
             fs.readFile(/*'./listes/'+args[0]+*/'listes/1.txt', 'utf8', function read(err, data) {
-                msg.channel.send('Ciao1');
                 if (err) {
                    return console.error(err);
                 }
                 content=data;
-                msg.channel.send(`${content.length}`);
                 dataToUse=content.split("\n");
             });
             console.log(dataToUse);
-            msg.channel.send(`${dataToUse}`);
+            msg.channel.send(`Ciao+${dataToUse}`);
             //fs.writeFile();
             //msg.channel.send(dataToUse);
             //const contents = dataToUse.split(/*' '*// +/||/\n/);//regex: regular expression
