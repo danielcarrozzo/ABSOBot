@@ -23,7 +23,6 @@ client.login(process.env.DISCORD_TOKEN);
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 })
-
 client.on('message', msg => {
   if (msg.author.bot) return;
   //if (!message.content.startsWith(prefix) || message.author.bot) return;

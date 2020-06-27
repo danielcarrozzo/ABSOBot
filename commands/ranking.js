@@ -1,6 +1,6 @@
 module.exports = {
     name: 'rank',
-    aliases: ['r', 'ranking'],
+    aliases: ['ra', 'ranking'],
     description: 'Add points to a user',
     execute(message, args) {
         var msg=message;
