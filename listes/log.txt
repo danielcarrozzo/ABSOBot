@@ -1,1 +1,1 @@
-Username(doer) Player NewScore OldScore ToAdd
+Action List Username(doer) Player OldScore (NewScore) (ToAdd)
