@@ -1,6 +1,7 @@
 module.exports = {
 	name: 'create',//anche c
 	description: 'Create all',
+	guildOnly: false,
 	execute(client, message, args, prefix) {
         var msg=message;
         //creare il tutto

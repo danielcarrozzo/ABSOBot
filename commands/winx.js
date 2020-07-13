@@ -4,25 +4,25 @@ module.exports = {
   name: 'winx',
   aliases: ['w', 'wi', 'magic winx, trasformaci'],
   description: 'Italian lyrics of Winx',
-  guildOnly: 'false',
+  guildOnly: false,
   execute(client, message, args, prefix) {//solo se hai KICK
     var msg=message;
     var trasformations=[];
-    trasformations[0]=['Magic', 'Magic Winx', 'Livello base', 'magic', 'magic winx', 'livello base'];
+    trasformations[0]=['Magic Winx', 'magic', 'Magic', 'Livello base', 'magic winx', 'livello base'];
     trasformations[1]=['Charmix', 'charmix'];
     trasformations[2]=['Enchantix', 'enchantix'];
-    trasformations[3]=['Enchantix Believix', 'bnchantix believix', 'Believix', 'believix'];
-    trasformations[4]=['Enchantix Harmonix', 'enchantix harmonix', 'Harmonix', 'harmonix'];
-    trasformations[5]=['Enchantix Sirenix', 'enchantix sirenix', 'Sirenix', 'sirenix'];
-    trasformations[6]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
-    trasformations[7]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
-    trasformations[8]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
-    trasformations[9]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
-    trasformations[10]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
+    trasformations[3]=['Enchantix Believix', 'believix', 'enchantix believix', 'Believix'];
+    trasformations[4]=['Enchantix Harmonix', 'harmonix', 'enchantix harmonix', 'Harmonix'];
+    trasformations[5]=['Enchantix Sirenix', 'sirenix', 'enchantix sirenix', 'Sirenix'];
+    trasformations[6]=['Enchantix Crystal Sirenix', 'crystal sirenix', 'enchantix crystal sirenix', 'Crystal Sirenix'];
+    trasformations[7]=['Enchantix Bloomix', 'bloomix', 'enchantix bloomix', 'Bloomix'];
+    trasformations[8]=['Enchantix Mythix', 'mythix', 'enchantix mythix', 'Mythix'];
+    trasformations[9]=['Enchantix Butterflix', 'butterflix', 'enchantix butterflix', 'Butterflix'];
+    trasformations[10]=['Enchantix Tynix', 'tynix', 'enchantix tynix', 'Tynix'];
+    trasformations[11]=['Enchantix Cosmix', 'tynix', 'enchantix cosmix ', 'Cosmix'];
+    trasformations[12]=['Dreamix', 'dreamix'];
+    trasformations[13]=['Onyrix', 'onyrix'];
     var testo;
-    //message.channel.send(`${trasformations[0]}`);
-    message.channel.send(`${args[0]}`);
-    message.channel.send(`${trasformations[1].includes(args[0])}`);
     var index;
     if(trasformations[0].includes(args[0])){
         index=0;
@@ -191,6 +191,15 @@ module.exports = {
     }else if(trasformations[10].includes(args[0])){
         index=10;
         testo="";
+    }else if(trasformations[11].includes(args[0])){
+        index=11;
+        testo="";
+    }else if(trasformations[12].includes(args[0])){
+        index=12;
+        testo="";
+    }else if(trasformations[13].includes(args[0])){
+        index=13;
+        testo="";
     }
     if(index>=0&&index<trasformations.length){
         var embed = new Discord.MessageEmbed().setColor('#ff00c8');
@@ -201,9 +210,7 @@ module.exports = {
     var embed = new Discord.MessageEmbed().setColor('#ff00c8');
     var trasformazioniElenco=[];
     for(var i=0; i<trasformations.length; i++){
-        console.log(typeof trasformations[i][0]);
         trasformazioniElenco.push(trasformations[i][0]);
-        console.log("-"+typeof trasformazioniElenco[i]);
     }
     var trasformazioniToString="";
     for(var i=0; i<trasformazioniElenco.length; i++){
