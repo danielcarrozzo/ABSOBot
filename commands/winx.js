@@ -11,9 +11,9 @@ module.exports = {
     trasformations[0]=['Magic', 'Magic Winx', 'Livello base', 'magic', 'magic winx', 'livello base'];
     trasformations[1]=['Charmix', 'charmix'];
     trasformations[2]=['Enchantix', 'enchantix'];
-    trasformations[3]=['Enchantix Harmonix', 'enchantix harmonix', 'Harmonix', 'harmonix'];
-    trasformations[4]=['Enchantix Sirenix', 'enchantix sirenix', 'Sirenix', 'sirenix'];
-    trasformations[5]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
+    trasformations[3]=['Enchantix Believix', 'bnchantix believix', 'Believix', 'believix'];
+    trasformations[4]=['Enchantix Harmonix', 'enchantix harmonix', 'Harmonix', 'harmonix'];
+    trasformations[5]=['Enchantix Sirenix', 'enchantix sirenix', 'Sirenix', 'sirenix'];
     trasformations[6]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
     trasformations[7]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
     trasformations[8]=['Livello base', 'Magic', 'Magic Winx', 'livello base', 'magic', 'magic winx'];
@@ -26,24 +26,24 @@ module.exports = {
     var index;
     if(trasformations[0].includes(args[0])){
         index=0;
-        testo="Siamo noi le Winx"+
-        "Fonte di energia"+
+        testo="Siamo noi le Winx\n"+
+        "Fonte di energia\n"+
         "Con la magia\n"+
         "Sfideremo le malvagie Trix\n"+
-        "Nuove fate siamo Winx\n"+
+        "Nuove fate siamo Winx\n\n"+
         
         "Flora\n"+
-        "Flora\n"+
+        "Flora\n\n"+
         
         "Winx Club\n"+
         "Stella Stella Stella\n"+
-        "Ali in cielo noi siamo Winx\n"+
+        "Ali in cielo noi siamo Winx\n\n"+
         
         "Sono Bloom col fuoco mi difenderò\n"+
         "E la mia forza dal cuore salirà\n"+
         "Io sono stella di luce di luce splenderò\n"+
         "Con i poteri raggi magici faro’\n"+
-        "Siamo magiche\n"+
+        "Siamo magiche\n\n"+
         
         "Siamo noi le Winx\n"+
         "Fonte di energia\n"+
@@ -80,19 +80,19 @@ module.exports = {
         "Nuove fate siamo\n"+
         "Nuove fate siamo\n"+
         "Nuove fate siamo\n"+
-        "Nuove fate siamo Winx\n"+
+        "Nuove fate siamo Winx\n\n"+
         
         "Winx Club\n"+
         "Winx Club\n"+
         "Winx Club\n"+
-        "Winx Club\n"+
+        "Winx Club\n\n"+
         
         "Siamo noi le Winx\n"+
         "Fonte di energia\n"+
         "Con la magia\n"+
         "Siamo noi le Winx\n"+
         "Fonte di energia\n"+
-        "Con la magia\n"+
+        "Con la magia\n\n"+
         
         "Siamo noi le Winx\n"+
         "Fonte di energia\n"+
@@ -112,7 +112,64 @@ module.exports = {
         testo="";
     }else if(trasformations[3].includes(args[0])){
         index=3;
-        testo="";
+        testo="Believix, Believix\n"+
+        "Believix, Believix\n"+
+        "Believix, Believix\n"+
+        "Believix, potere Winx\n\n"+
+        
+        "Si ci credi di luce risplenderai\n"+
+        "(Risplenderai)\n"+
+        "E ti trasformerai\n"+
+        "Credici credici\n"+
+        "Believix, magia di Winx\n\n"+
+        
+        "Dal tuo cuore un potere invincibile\n"+
+        "Sei magica magica\n"+
+        "E ti trasformerai\n"+
+        "Believix, potere Winx\n\n"+
+        
+        "Si ci credi di luce risplenderai\n"+
+        "E ti trasformerai\n"+
+        "Credici credici\n"+
+        "Believix, magia di Winx\n\n"+
+        
+        "È nel cuore un potere invincibile\n"+
+        "Siamo magiche magiche\n"+
+        "La forza è dentro me\n"+
+        "Siamo noi le magiche\n\n"+
+        
+        "Winx\n\n"+
+        
+        "Believix, Believix\n"+
+        "Believix, Believix\n"+
+        "Believix, Believix\n"+
+        "Believix, potere Winx\n\n"+
+        
+        "Se ci credi di luce risplenderai\n"+
+        "E ti trasformerai\n"+
+        "Credici credici\n"+
+        "Believix, magia di Winx\n\n"+
+        
+        "Dal tuo cuore un potere invincibile\n"+
+        "Sei magica magica\n"+
+        "E ti trasformerai\n"+
+        "E ti trasformerai\n\n"+
+        
+        "E ti trasformerai\n"+
+        "Believix, potere Winx\n"+
+        "Se ci credi di luce risplenderai\n"+
+        "E ti trasformerai\n\n"+
+        
+        "Credici credici\n\n"+
+        
+        "Believix, magia di Winx\n"+
+        "È nel cuore un potere invincibile\n"+
+        "Siamo magiche magiche\n\n"+
+        
+        "La forza è dentro me\n"+
+        "Siamo noi le magiche\n\n"+
+        
+        "Winx";
     }else if(trasformations[4].includes(args[0])){
         index=4;
         testo="";
