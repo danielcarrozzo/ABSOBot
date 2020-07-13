@@ -44,7 +44,7 @@ module.exports = {
             if(newPlayer){
               //dataToUse.push(args[1]);//può diventare un writeFile
               //dataToUse.push(args[2]);
-              msg.channel.send("The new score is "+`${args[1]}`+" for "+`${args[2]}`);
+              msg.channel.send("The new score is "+`${args[2]}`+" for "+`${args[1]}`+" (New player)");
               fs.appendFile('listes/'+args[0]+'.txt', `${args[1]}`+`\r\n`+`${args[2]}`+`\r\n`, function (err) {
                 if (err) {
                   //throw err;

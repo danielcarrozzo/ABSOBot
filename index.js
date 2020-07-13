@@ -67,10 +67,10 @@ client.on('message', msg => {
 
     try {
       //client.commands.get(command).execute(message, args);
-      command.execute(client, message, args, prefix);
+      command.run(client, message, args, prefix);
     } catch (error) {
       try{
-        command.run(client, message, args, prefix);
+        command.execute(client, message, args, prefix);
       }catch(error){
         console.error(error);
         message.reply('there was an error trying to execute that command!');
