@@ -101,8 +101,6 @@ client.on('message', msg => {
       msg.author.addFriend;//Idk se funziona
     }else if (msg.content === 'Chi sono?') {
       msg.channel.send(`Smemorato eh? Sei ${msg.author.username}!`);
-    }else if (msg.content === 'Quanti siamo qua dentro?') {
-      return msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
     }else if(msg.content.startsWith('Buongiorno')){
       if(!byTheBot(msg)){
         const args = msg.content.split(/*' '*// +/);//regex: regular expression
