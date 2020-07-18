@@ -15,7 +15,7 @@ module.exports.run = async function(client, message, args, prefix) {
   botMsg.edit({ embed: {
   title: "📶 Ping",
   description: [
-    "**Server** (**Taverna di KraY**): `" + (botMsg.createdAt - message.createdAt) + "ms`",
+    "**Server** (**Comodino di Kirill**): `" + (botMsg.createdAt - message.createdAt) + "ms`",
     "**API**: `" + Math.round(client.ping) + "ms`",
     "**Uptime**: `" + msToTime(client.uptime) + "`"
   ].join("\n"),
