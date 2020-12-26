@@ -2,9 +2,8 @@ const Discord = require('discord.js');
 const emojiCharacters = require('../emojiCharacters');
 
 module.exports = {
-  name: 'loser',
-  aliases: ['lo'],
-  description: 'Write loser',
+  name: 'rain',
+  description: 'Compliments to Rain in Italian',
   execute(client, message, args, prefix) {
     var msg=message;
     if (args.length===0) {
