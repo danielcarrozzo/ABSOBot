@@ -1,7 +1,6 @@
 {
   "name": "abso",
-  "version": "1.0.1",
-  "description": "",
+  "version": "1.0.2",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -11,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
-    "discord.js": "^12.2.0",
+    "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "list": "^2.0.19",
@@ -19,6 +18,16 @@
     "npm": "^6.14.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
-  }
+    "nodemon": "^2.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DARKRAYTA/ABSOBot.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/DARKRAYTA/ABSOBot/issues"
+  },
+  "homepage": "https://github.com/DARKRAYTA/ABSOBot#readme",
+  "description": ""
 }
