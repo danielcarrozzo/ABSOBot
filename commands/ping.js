@@ -1,5 +1,5 @@
 module.exports = {
-	name: 'ping',
+  name: 'ping',
   aliases: [ "pong", "latency", "uptime" ],
   cooldown: 5,
   description: "Get the latency of the bot.",
@@ -7,22 +7,21 @@ module.exports = {
   checkArgs: (args) => !args.length
 };
 
-module.exports.run = async function(client, message, args, prefix) {
+module.exports.run = async function(client, msg, args, prefix) {
   //Source: https://github.com/promise/countr/blob/master/commands/ping.js#L11-L42
-  var msg=message;
-    //return msg.channel.send('Pong');
-  let botMsg = await message.channel.send("〽️ Pinging")
+  let botMsg = await msg.channel.send("〽️ Pinging");
   botMsg.edit({ embed: {
   title: "📶 Ping",
   description: [
-    "**Server** (**from KraY's G14**): `" + (botMsg.createdAt - message.createdAt) + "ms`",
+    "**Server** (**from KraY's G14**): `" + (botMsg.createdAt - msg.createdAt) + "ms`",
     "**API**: `" + Math.round(client.ping) + "ms`",
     "**Uptime**: `" + msToTime(client.uptime) + "`"
   ].join("\n"),
   color: /*config.color*/"#771177",
-  footer: { text: "Requested by " + message.author.tag, icon_url: message.author.displayAvatarURL },
+  footer: { text: "Requested by " + msg.author.tag, icon_url: msg.author.displayAvatarURL },
   timestamp: new Date()
   }}).catch(() => botMsg.edit("🆘 An unknown error occurred. Do I have permission? (Embed Links)"));
+  console.log(client);
 }
 
 function msToTime(ms){

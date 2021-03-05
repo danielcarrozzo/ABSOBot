@@ -1,12 +1,11 @@
 require("dotenv").config();
 
 const fs = require('fs');
-const Discord = require('discord.js')
+const Discord = require('discord.js');
 const { prefix, favourite_song } = require('./config.json');
-//const {prefix}=require('./config.json');
-//const config = require('./config.json');
 const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
+
 //Commands adding
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));//This next step is how you'll dynamically retrieve all your newly created command files. Add this below your client.commands line:
@@ -17,20 +16,19 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);//Faccio una specie di hashmap con chiave (nome comando dentro il file) e file
 }
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN); //using env pass
 
-//client.on('ready', () => console.log(`Logged in as ${client.user.tag}!`))
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 })
+
 client.on('message', msg => {
-  if (msg.author.bot) return;
-  //if (!message.content.startsWith(prefix) || message.author.bot) return;
-  // i msg.channel.send vanno bene anche senza return
+  if (msg.author.bot) return; //if (!msg.content.startsWith(prefix) || msg.author.bot) return; //but i take also different commands without prefix
+  //msg.channel.send are ok also without return, it's just to end quicker
+
   if (msg.content.startsWith(prefix)){
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
-    //const command = args.shift().toLowerCase();
-    const commandName /*command */= args.shift().toLowerCase();
+    const commandName = args.shift().toLowerCase();
 
     //Check if it exist
     //if (!client.commands.has(/*command*/commandName)) return;
@@ -39,12 +37,10 @@ client.on('message', msg => {
     const command = client.commands.get(commandName)
     	|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
     if (!command) return;
-    
-    var message=msg;
 
     //Check if it can't be used in DMs
-    if (command.guildOnly && (message.channel.type != 'text')) {
-      return message.reply('I can\'t execute that command inside DMs!');
+    if (command.guildOnly && (msg.channel.type != 'text')) {
+      return msg.reply('I can\'t execute that command inside DMs!');
     }
     
     //Check if it can be used cause timeslice
@@ -54,30 +50,30 @@ client.on('message', msg => {
     const now = Date.now();
     const timestamps = cooldowns.get(command.name);
     const cooldownAmount = (command.cooldown || 0) * 1000;
-    if (timestamps.has(message.author.id)) {
-      const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+    if (timestamps.has(msg.author.id)) {
+      const expirationTime = timestamps.get(msg.author.id) + cooldownAmount;
     
       if (now < expirationTime) {
         const timeLeft = (expirationTime - now) / 1000;
-        return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+        return msg.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
       }
     }
-    timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+    timestamps.set(msg.author.id, now);
+    setTimeout(() => timestamps.delete(msg.author.id), cooldownAmount);
 
     try {
-      //client.commands.get(command).execute(message, args);
-      command.run(client, message, args, prefix);
+      //client.commands.get(command).execute(msg, args);
+      command.run(client, msg, args, prefix);
     } catch (error) {
       try{
-        command.execute(client, message, args, prefix);
+        command.execute(client, msg, args, prefix);
       }catch(error){
         console.error(error);
-        message.reply('there was an error trying to execute that command!');
+        msg.reply('there was an error trying to execute that command!');
       }
     }
 
-    //message.delete().catch(error => {
+    //msg.delete().catch(error => {
     //  // Only log the error if it is not an Unknown Message error
     //  if (error.code !== 10008/*Discord.Constants.APIErrors.UNKNOWN_MESSAGE */) {
     //    console.error('Failed to delete the message:', error);

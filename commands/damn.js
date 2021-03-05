@@ -5,14 +5,13 @@ module.exports = {
   name: 'damn',
   aliases: ['da'],
   description: 'Write damn',
-  execute(client, message, args, prefix) {
-    var msg=message;
+  execute(client, msg, args, prefix) {
     if (args.length===0) {
         msg.channel.send(emojiCharacters.damn);
-        message.delete().catch(error => {
+        msg.delete().catch(error => {
             // Only log the error if it is not an Unknown Message error
           if (error.code !== 10008/*Discord.Constants.APIErrors.UNKNOWN_MESSAGE */) {
-            console.error('Failed to delete the message:', error);
+            console.error('Failed to delete the msg:', error);
           }
         });
     }

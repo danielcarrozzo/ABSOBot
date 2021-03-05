@@ -2,27 +2,26 @@ module.exports = {
   name: 'reload',
   aliases: ['r'],
   description: 'Reloads a command',
-  execute(client, message, args, prefix) {
-    var msg=message;
-    if(message.author.id==="246710308817731585"){
-      if (!args.length) return message.channel.send(`You didn't pass any command to reload, ${message.author}!`);
+  execute(client, msg, args, prefix) {
+    if(msg.author.id==="246710308817731585"){
+      if (!args.length) return msg.channel.send(`You didn't pass any command to reload, ${msg.author}!`);
         const commandName = args[0].toLowerCase();
-        const command = message.client.commands.get(commandName)
-            || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+        const command = msg.client.commands.get(commandName)
+            || msg.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
             
-        if (!command) return message.channel.send(`There is no command with name or alias \`${commandName}\`, ${message.author}!`);
+        if (!command) return msg.channel.send(`There is no command with name or alias \`${commandName}\`, ${msg.author}!`);
 
         delete require.cache[require.resolve(`./${command.name}.js`)];
 
         try {
           const newCommand = require(`./${command.name}.js`);//it's a overwrite
-            message.client.commands.set(newCommand.name, newCommand);
+            msg.client.commands.set(newCommand.name, newCommand);
         } catch (error) {//it doesn't delete all the command if there is an error
             console.log(error);
-            message.channel.send(`There was an error while reloading a command \`${command.name}\`:\n\`${error.message}\``);
+            msg.channel.send(`There was an error while reloading a command \`${command.name}\`:\n\`${error.msg}\``);
         }
 
-        message.channel.send(`Command \`${command.name}\` was reloaded!`);
+        msg.channel.send(`Command \`${command.name}\` was reloaded!`);
     }else{
         return msg.channel.send('Ao solo KraY reloadda ok?');
     }

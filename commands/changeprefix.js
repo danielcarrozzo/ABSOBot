@@ -2,8 +2,7 @@ module.exports = {
 	name: 'changeprefix',
   usage: '<prefix>',
 	description: 'Change the prefix',
-	execute(client, message, args, prefix) {
-        var msg=message;
+	execute(client, msg, args, prefix) {
         if (!args.length) {
           return msg.channel.send(`${usage}\nYou didn't provide any arguments, ${msg.author}! Pls add a name for the list`);
         }

@@ -1,8 +1,7 @@
 module.exports = {
 	name: 'createlist',//anche cl
 	description: 'Add a list in all the structure',
-	execute(client, message, args, prefix) {
-        var msg=message;
+	execute(client, msg, args, prefix) {
         if (!args.length) {
           return msg.channel.send(`You didn't provide any arguments, ${msg.author}! Pls add a name for the list`);
         }

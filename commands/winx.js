@@ -5,8 +5,7 @@ module.exports = {
   aliases: ['w', 'wi', 'magic winx, trasformaci'],
   description: 'Italian lyrics of Winx',
   guildOnly: false,
-  execute(client, message, args, prefix) {//solo se hai KICK
-    var msg=message;
+  execute(client, msg, args, prefix) {//solo se hai KICK
     var trasformations=[];
     trasformations[0]=['Magic Winx', 'magic', 'Magic', 'Livello base', 'magic winx', 'livello base'];
     trasformations[1]=['Charmix', 'charmix'];
@@ -204,7 +203,7 @@ module.exports = {
     if(index>=0&&index<trasformations.length){
         var embed = new Discord.MessageEmbed().setColor('#ff00c8');
         embed.setTitle(trasformations[index][0]);
-        message.channel.send(embed);
+        msg.channel.send(embed);
         return msg.channel.send("`"+testo+"`", {split: true});
     }
     var embed = new Discord.MessageEmbed().setColor('#ff00c8');
@@ -217,6 +216,6 @@ module.exports = {
         trasformazioniToString+=trasformazioniElenco[i]+"\n";
     }
     embed.addField('Magica fata, bisogna specificare la trasformazione!', trasformazioniToString, true);
-    return message.channel.send(embed);
+    return msg.channel.send(embed);
   }
 };

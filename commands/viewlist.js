@@ -4,12 +4,10 @@ module.exports = {
     name: 'viewlist',
     aliases: ['vl'],
     description: 'Show the list as it is',
-    execute(client, message, args, prefix) {
-        var msg=message;
+    execute(client, msg, args, prefix) {
         if (args.length===0) {
             return msg.channel.send(`You need to specify the list number`);
         }else if(args.length===1){
-            var msg=message;
             var fs = require('fs');
             fs.readFile('listes/'+args[0]+'.txt', 'utf8', function read(err, data) {
                 if (err) {
