@@ -21,11 +21,11 @@ module.exports = {
                 embed.addField('This list doesn\'t exist');
             }*/
             postgress.connect();
-
-            postgress.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+            postgress.query('SELECT * FROM Ranking WHERE WeekId='+args[0]+';', (err, res) => {
                 if (err) throw err;
                 for (let row of res.rows) {
                     console.log(JSON.stringify(row));
+                    embed.addField(JSON.stringify(row.userid+': '+row.points));
                 }
                 postgress.end();
             });

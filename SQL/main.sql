@@ -6,9 +6,9 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE BanReasons(
-    BanReasonId     SMALLSERIAL PRIMARY KEY,
+    BanReasonId     SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     Explanation     VARCHAR(255) NOT NULL,
-    DefaultBantime  INTEGER NOT NULL
+    DefaultBantime  SMALLINT NOT NULL
 );
 
 CREATE TABLE Users(

@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const fs = require('fs');
-const { Pool } = require('pg');
+const { Client } = require('pg');
 const Discord = require('discord.js');
 
 const { prefix, favourite_song } = require('./config.json');
@@ -9,7 +9,7 @@ const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
 
 //Connection
-const pool = new Pool({
+const postgreSQLClient = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
@@ -75,8 +75,8 @@ client.on('message', msg => {
 
     try {
       //client.commands.get(command).execute(msg, args);
-      //command.run(client, pool, msg, args, prefix);
-      command.execute(client, pool, msg, args);
+      //command.run(client, postgreSQLClient, msg, args, prefix);
+      command.execute(client, postgreSQLClient, msg, args);
     } catch(error){
       try{
         command.execute(client, msg, args);
