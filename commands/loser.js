@@ -5,7 +5,7 @@ module.exports = {
   name: 'loser',
   aliases: ['lo'],
   description: 'Write loser',
-  execute(client, msg, args, prefix) {
+  execute(client, msg, args) {
     if (args.length===0) {
         msg.channel.send(emojiCharacters.loser);
         msg.delete().catch(error => {

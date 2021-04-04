@@ -2,7 +2,7 @@ module.exports = {
 	name: 'kick',
   description: 'How cya dudes and gurls',
   guildOnly: 'true',
-  execute(client, msg, args, prefix) {//solo se hai KICK
+  execute(client, msg, args) {//solo se hai KICK
     if(msg.member.hasPermission('KICK_MEMBERS')){
       const member = msg.mentions.members.first()
       if (!member) {

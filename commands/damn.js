@@ -1,11 +1,10 @@
-const Discord = require('discord.js');
 const emojiCharacters = require('../emojiCharacters');
 
 module.exports = {
   name: 'damn',
   aliases: ['da'],
   description: 'Write damn',
-  execute(client, msg, args, prefix) {
+  execute(client, msg, args) {
     if (args.length===0) {
         msg.channel.send(emojiCharacters.damn);
         msg.delete().catch(error => {

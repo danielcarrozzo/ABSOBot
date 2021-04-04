@@ -4,7 +4,7 @@ module.exports = {
     name: 'list',
     aliases: ['l'],
     description: 'Show the list',
-    execute(client, msg, args, prefix) {
+    execute(client, msg, args) {
         if (!args) {
             return msg.channel.send(`You need to specify the list number`);
         }else if(args.length===1){

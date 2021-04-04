@@ -7,21 +7,20 @@ module.exports = {
   checkArgs: (args) => !args.length
 };
 
-module.exports.run = async function(client, msg, args, prefix) {
+module.exports.execute = async function(client, msg, args) {//o run
   //Source: https://github.com/promise/countr/blob/master/commands/ping.js#L11-L42
   let botMsg = await msg.channel.send("〽️ Pinging");
   botMsg.edit({ embed: {
   title: "📶 Ping",
   description: [
     "**Server** (**from KraY's G14**): `" + (botMsg.createdAt - msg.createdAt) + "ms`",
-    "**API**: `" + Math.round(client.ping) + "ms`",
-    "**Uptime**: `" + msToTime(client.uptime) + "`"
+    "**API**: `" + Math.round(client.ws.ping) + "ms`",
+    "**Uptime**: `" + msToTime(client.uptime) + "`",
   ].join("\n"),
   color: /*config.color*/"#771177",
   footer: { text: "Requested by " + msg.author.tag, icon_url: msg.author.displayAvatarURL },
   timestamp: new Date()
   }}).catch(() => botMsg.edit("🆘 An unknown error occurred. Do I have permission? (Embed Links)"));
-  console.log(client);
 }
 
 function msToTime(ms){

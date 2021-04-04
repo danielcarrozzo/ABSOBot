@@ -1,10 +1,20 @@
 require("dotenv").config();
 
 const fs = require('fs');
+const { Postgress } = require('pg');
 const Discord = require('discord.js');
+
 const { prefix, favourite_song } = require('./config.json');
 const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
+
+//Connection
+const postgress = new Postgress({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 //Commands adding
 client.commands = new Discord.Collection();
@@ -20,6 +30,8 @@ client.login(process.env.DISCORD_TOKEN); //using env pass
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
+
+  console.log("Database connected!");
 })
 
 client.on('message', msg => {
@@ -63,13 +75,18 @@ client.on('message', msg => {
 
     try {
       //client.commands.get(command).execute(msg, args);
-      command.run(client, msg, args, prefix);
-    } catch (error) {
+      //command.run(client, postgress, msg, args, prefix);
+      command.execute(client, postgress, msg, args);
+    } catch(error){
       try{
-        command.execute(client, msg, args, prefix);
+        command.execute(client, msg, args);
       }catch(error){
-        console.error(error);
-        msg.reply('there was an error trying to execute that command!');
+        try{
+
+        }catch(error){
+          console.error(error);
+          msg.reply('there was an error trying to execute that command!');
+        }
       }
     }
 
@@ -79,60 +96,6 @@ client.on('message', msg => {
     //    console.error('Failed to delete the message:', error);
     //  }
     //});
-  }else{
-    if (msg.content === 'Fottiti') {
-      msg.channel.send(`Ma vafancul bukina mammt`);
-    }else if (msg.content === 'Canzone preferita?') {
-      msg.channel.send(`${favourite_song} OVVIAMENTE`);
-    }else if (msg.content === 'Dove sono?') {
-      msg.channel.send(`In un luogo magico e fatato chiamato ${msg.guild.name}`);
-    }else if (msg.content === 'Dimmi di più su questo regno') {
-      msg.channel.send(`È stato creato il ${msg.guild.createdAt} (La prossima volta cerco di dirlo in un modo meno rude) e nel globo è collocato in ${msg.guild.region}`);
-    }else if (msg.content === 'Quanti siamo qua dentro?') {
-      msg.channel.send(`Qualcosa come ${msg.guild.memberCount} anime`);
-    }else if (msg.content === 'Chi sono?') {
-      msg.channel.send(`Smemorato eh? Sei ${msg.author.username}!`);
-    }else if (msg.content === 'Stringiamo amicizia?') {
-      msg.channel.send(`Certo!`);
-      msg.author.addFriend;//Idk se funziona
-    }else if (msg.content === 'Chi sono?') {
-      msg.channel.send(`Smemorato eh? Sei ${msg.author.username}!`);
-    }else if(msg.content.startsWith('Buongiorno')){
-      if(!byTheBot(msg)){
-        const args = msg.content.split(/*' '*// +/);//regex: regular expression
-        if(args.length==1){
-          return msg.channel.send('A chi?');
-        }else if (args[1] === 'ABSO') {
-          return msg.channel.send('No vabbè mi ha salutato non ci credo');
-        }
-        return msg.channel.send(`Buongiorno ${args[1]}`);
-      }
-    }else if(msg.member.hasPermission('ADMINISTRATOR')){//'KICK_MEMBERS', 'BAN_MEMBERS'
-      if (msg.content.startsWith('SpamTag')) {
-        const member = msg.mentions.members.first()
-        if(member!=null){
-          var i;
-          for (i = 0; i < 100; i++) {
-            //msg.reply(`${member.reply}`)
-            msg.channel.send(`${i} ${member}`);
-            //get tag() {
-            // return `${this.username}#${this.discriminator}`;
-            //}
-          } 
-        }
-      }else if (msg.content.startsWith('UltraMegaTopSecretSpamTag')) {
-        const member = msg.mentions.members.first()
-        if(member!=null){
-          var i;
-          for (i = 0; i < 10000; i++) {
-            msg.channel.send(`${i} ${member}`);
-          } 
-        }
-      }
-    }
-    if(msg.content=='Come mi chiamo?'){
-      msg.channel.send(`${msg.author}`);
-    }
   }
 })
 

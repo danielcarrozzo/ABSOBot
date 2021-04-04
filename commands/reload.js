@@ -2,12 +2,11 @@ module.exports = {
   name: 'reload',
   aliases: ['r'],
   description: 'Reloads a command',
-  execute(client, msg, args, prefix) {
+  execute(client, msg, args) {
     if(msg.author.id==="246710308817731585"){
       if (!args.length) return msg.channel.send(`You didn't pass any command to reload, ${msg.author}!`);
         const commandName = args[0].toLowerCase();
-        const command = msg.client.commands.get(commandName)
-            || msg.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+        const command = msg.client.commands.get(commandName) || msg.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
             
         if (!command) return msg.channel.send(`There is no command with name or alias \`${commandName}\`, ${msg.author}!`);
 

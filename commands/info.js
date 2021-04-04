@@ -1,7 +1,7 @@
 module.exports = {
     name: 'info',
     description: 'Shows the infos of the Bot',
-    execute(client, message, args, prefix) {
+    execute(client, message, args) {
         const Discord = require('discord.js');
         //const embedInfo = new Discord.MessageEmbed();
 

@@ -1,5 +1,4 @@
 .idea
-.env
-listes
-node_modules
 macello
+node_modules
+.env
