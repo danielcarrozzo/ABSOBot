@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const fs = require('fs');
-const { Client } = require('pg');
+const { Pool } = require('pg');
 const Discord = require('discord.js');
 
 const { prefix, favourite_song } = require('./config.json');
@@ -9,7 +9,7 @@ const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
 
 //Connection
-const postgreSQLClient = new Client({
+const postgreSQLClient = new Pool({/*Pool allows to have more queryes, client just one and then it has to be throw out: https://stackoverflow.com/questions/48751505/how-can-i-choose-between-client-or-pool-for-node-postgres  */
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
@@ -39,6 +39,7 @@ client.on('message', msg => {
   //msg.channel.send are ok also without return, it's just to end quicker
 
   if (msg.content.startsWith(prefix)){
+    console.log(msg);
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     const commandName = args.shift().toLowerCase();
 
@@ -76,26 +77,11 @@ client.on('message', msg => {
     try {
       //client.commands.get(command).execute(msg, args);
       //command.run(client, postgreSQLClient, msg, args, prefix);
-      command.execute(client, postgreSQLClient, msg, args);
+      command.execute(client, msg, args, postgreSQLClient);//It uses dinamically the quantity of arguments
     } catch(error){
-      try{
-        command.execute(client, msg, args);
-      }catch(error){
-        try{
-
-        }catch(error){
-          console.error(error);
-          msg.reply('there was an error trying to execute that command!');
-        }
-      }
+        console.error(error);
+        msg.reply('there was an error trying to execute that command!');
     }
-
-    //msg.delete().catch(error => {
-    //  // Only log the error if it is not an Unknown Message error
-    //  if (error.code !== 10008/*Discord.Constants.APIErrors.UNKNOWN_MESSAGE */) {
-    //    console.error('Failed to delete the message:', error);
-    //  }
-    //});
   }
 })
 

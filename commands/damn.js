@@ -4,7 +4,7 @@ module.exports = {
   name: 'damn',
   aliases: ['da'],
   description: 'Write damn',
-  execute(client, msg, args) {
+  execute: async function(client, msg, args) {
     if (args.length===0) {
         msg.channel.send(emojiCharacters.damn);
         msg.delete().catch(error => {
