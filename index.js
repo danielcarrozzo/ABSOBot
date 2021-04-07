@@ -8,6 +8,8 @@ const { prefix, favourite_song } = require('./config.json');
 const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
 
+const utilities = require('./utilities/utilities');
+
 //Connection
 const postgreSQLClient = new Pool({/*Pool allows to have more queryes, client just one and then it has to be throw out: https://stackoverflow.com/questions/48751505/how-can-i-choose-between-client-or-pool-for-node-postgres  */
   connectionString: process.env.DATABASE_URL,
@@ -15,6 +17,8 @@ const postgreSQLClient = new Pool({/*Pool allows to have more queryes, client ju
     rejectUnauthorized: false
   }
 });
+postgreSQLClient.connect();
+console.log("Database connected!");
 
 //Commands adding
 client.commands = new Discord.Collection();
@@ -30,16 +34,13 @@ client.login(process.env.DISCORD_TOKEN); //using env pass
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
-
-  console.log("Database connected!");
 })
 
 client.on('message', msg => {
-  if (msg.author.bot) return; //if (!msg.content.startsWith(prefix) || msg.author.bot) return; //but i take also different commands without prefix
+  //I don't need it cause send rank list if (msg.author.bot) return; //if (!msg.content.startsWith(prefix) || msg.author.bot) return; //but i take also different commands without prefix
   //msg.channel.send are ok also without return, it's just to end quicker
 
   if (msg.content.startsWith(prefix)){
-    console.log(msg);
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     const commandName = args.shift().toLowerCase();
 
@@ -77,7 +78,7 @@ client.on('message', msg => {
     try {
       //client.commands.get(command).execute(msg, args);
       //command.run(client, postgreSQLClient, msg, args, prefix);
-      command.execute(client, msg, args, postgreSQLClient);//It uses dinamically the quantity of arguments
+      command.execute(client, msg, args, utilities, postgreSQLClient);//It uses dinamically the quantity of arguments
     } catch(error){
         console.error(error);
         msg.reply('there was an error trying to execute that command!');
@@ -94,7 +95,6 @@ process.on('unhandledRejection', error => {
 client.on('shardError', error => {
   console.error('A websocket connection encountered an error:', error);
 });
-
 
 function byTheBot(msg){//funziona!
   return msg.author.bot;

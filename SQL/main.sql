@@ -124,6 +124,11 @@ CREATE TABLE Ranking(
     PRIMARY KEY (WeekId, UserId)
 );
 
+CREATE TABLE Info(
+    CurrentWeek     SMALLINT PRIMARY KEY,
+    InProgress      BOOLEAN NOT NULL
+);
+
 /*Numeric types: https://www.postgresql.org/docs/9.1/datatype-numeric.html*/
 /*Generated always as identity: https://www.postgresqltutorial.com/postgresql-identity-column/#:~:text=The%20GENERATED%20ALWAYS%20instructs%20PostgreSQL,value%20for%20the%20identity%20column.*/
 /*posting_date DATE NOT NULL DEFAULT CURRENT_DATE
