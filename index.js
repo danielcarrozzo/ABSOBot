@@ -4,7 +4,7 @@ const fs = require('fs');
 const { Pool } = require('pg');
 const Discord = require('discord.js');
 
-const { prefix, favourite_song } = require('./config.json');
+const { prefix } = require('./config.json');
 const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
 
@@ -25,6 +25,7 @@ client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));//This next step is how you'll dynamically retrieve all your newly created command files. Add this below your client.commands line:
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
+	//Dependency Injection not used: https://www.youtube.com/watch?v=TxxdqfhMUnI, https://www.npmjs.com/package/discordjs-dependency-injection-typescript
 	// set a new item in the Collection
 	// with the key as the command name and the value as the exported module
 	client.commands.set(command.name, command);//Faccio una specie di hashmap con chiave (nome comando dentro il file) e file
@@ -44,13 +45,13 @@ client.on('message', msg => {
     const args = msg.content.slice(prefix.length).split(/*' '*// +/);//regex: regular expression
     const commandName = args.shift().toLowerCase();
 
-    //Check if it exist
-    //if (!client.commands.has(/*command*/commandName)) return;
-
-    //check Alliases
+    //Check Alliases
     const command = client.commands.get(commandName)
     	|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-    if (!command) return;
+    if (!command) return msg.channel.send('Wut?! I\'m a machine but not stupid');
+
+    //Check if it exist
+    //if (!client.commands.has(/*command*/commandName)) return ;
 
     //Check if it can't be used in DMs
     if (command.guildOnly && (msg.channel.type != 'text')) {
@@ -77,8 +78,7 @@ client.on('message', msg => {
 
     try {
       //client.commands.get(command).execute(msg, args);
-      //command.run(client, postgreSQLClient, msg, args, prefix);
-      command.execute(client, msg, args, utilities, postgreSQLClient);//It uses dinamically the quantity of arguments
+      command.execute(msg, client, args, postgreSQLClient);//It uses dinamically the quantity of arguments, execute/run
     } catch(error){
         console.error(error);
         msg.reply('there was an error trying to execute that command!');

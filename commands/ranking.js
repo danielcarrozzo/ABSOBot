@@ -1,15 +1,16 @@
+const { default_color } = require('../config.json');
 const Discord = require('discord.js');
 
 module.exports = {
     name: 'ranking',
     aliases: ['ra'],
     description: 'Show the list as it is',
-    execute: async function(client, msg, args, utilities, postgress) {
+    execute: async function(msg, client, args, postgreSQL) {
         if (args.length===0) {
             return msg.channel.send(`You need to specify the list number`);
         }else if(args.length===1){
             if(args[0]>=1 && args[0]<=8){
-                var embed = new Discord.MessageEmbed().setColor('#771177').setTimestamp(Date.now());//In because .send is not in the callback so I need to do all stuff here and .addField can not be used in (maybe)
+                var embed = new Discord.MessageEmbed().setColor(default_color).setTimestamp(Date.now());//In because .send is not in the callback so I need to do all stuff here and .addField can not be used in (maybe)
                 embed.setTitle('Ranking');
                 let toSend;
                 let capability=50;

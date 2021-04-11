@@ -5,7 +5,7 @@ module.exports = {
   description: "Get the latency of the bot.",
   permissionRequired: 0, // 0 All, 1 Mods, 2 Admins, 3 Server Owner, 4 Bot Admin, 5 Bot Owner
   checkArgs: (args) => !args.length,
-  execute: async function(client, msg, args) {//o run
+  execute: async function(msg, client) {//o run
     //Source: https://github.com/promise/countr/blob/master/commands/ping.js#L11-L42
     let botMsg = await msg.channel.send("〽️ Pinging");
     botMsg.edit({ embed: {
