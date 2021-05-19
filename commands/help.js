@@ -1,12 +1,14 @@
+const Discord = require('discord.js');
 const { prefix } = require('../config.json');
 
 module.exports = {
 	name: 'help',
+	display: true,
 	description: 'View commands usable',
 	aliases: ['h', 'commands'],
 	usage: '[command name]',
 	cooldown: 5,
-	execute(msg, client, args) {
+	execute(msg, args) {
 		var embed=new Discord.MessageEmbed();
 		const { commands } = msg.client;
 		if (!args.length) {

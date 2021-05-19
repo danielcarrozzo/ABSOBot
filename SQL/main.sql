@@ -14,6 +14,7 @@ CREATE TABLE BanReasons(
 CREATE TABLE Users(
     UserId          UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     DiscordId       CHAR(18) NOT NULL UNIQUE,
+    FriendCode      CHAR(12) UNIQUE,
     AnchorBack      BOOLEAN,
     MidSupport      BOOLEAN,
     FrontSlayer     BOOLEAN
@@ -30,7 +31,10 @@ CREATE TABLE Admins(
 
 CREATE TABLE Weeks(
     WeekId          SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    RankingMessageId    CHAR(18) NOT NULL UNIQUE
+    UserChampionId          UUID,
+    CONSTRAINT UserChampion FOREIGN KEY(UserChampionId) REFERENCES Users(UserId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE MatchEvents(
@@ -40,6 +44,8 @@ CREATE TABLE MatchEvents(
 
 CREATE TABLE Rulements(
     RulementId      SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    MaxGamesToPlayInADay SMALLINT NOT NULL,
+    MatchesToPlay   SMALLINT NOT NULL,
     WonMatchPoint   SMALLINT NOT NULL,
     WinBonus        SMALLINT NOT NULL,
     FirstAbandonmentMalus   SMALLINT NOT NULL,
@@ -48,14 +54,13 @@ CREATE TABLE Rulements(
 );
 
 CREATE TABLE Matches(
-    MatchId         UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
-    MessageId       CHAR(14) NOT NULL,
+    MatchId         UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    WeekId          SMALLINT NOT NULL,
+    IndexId          SMALLINT NOT NULL,
     TeamAlphaScore  SMALLINT NOT NULL,
     TeamBetaScore   SMALLINT NOT NULL,
-    MessageTeamAlphaScoreId CHAR(18) NOT NULL,
-    MessageTeamBetaScoreId  CHAR(18) NOT NULL,
     RulementId      SMALLINT NOT NULL,
-    WeekId          SMALLINT NOT NULL,
+    DateTimeInsert  TIMESTAMP NOT NULL DEFAULT NOW(),
     EventId         SMALLINT,
     Comment         VARCHAR(255),
     CONSTRAINT RulementMatch FOREIGN KEY(RulementId) REFERENCES Rulements(RulementId)
@@ -67,13 +72,14 @@ CREATE TABLE Matches(
     CONSTRAINT EventMatch FOREIGN KEY(EventId) REFERENCES MatchEvents(EventId)
         ON DELETE SET NULL
         ON UPDATE SET NULL,
-    UNIQUE(MessageId, MessageTeamAlphaScoreId, MessageTeamBetaScoreId)
+    UNIQUE(WeekId, IndexId)
 );
 
 CREATE TABLE Banned(
     UserId          UUID,
     BanReasonId     SMALLINT,
-    Date            DATE DEFAULT CURRENT_DATE ,
+    Start           DATE DEFAULT NOW(),
+    Period          Interval NOT NULL,
     Comment         VARCHAR(255),
     CONSTRAINT UserBanned FOREIGN KEY(UserId) REFERENCES Users(UserId)
         ON DELETE CASCADE
@@ -81,7 +87,7 @@ CREATE TABLE Banned(
     CONSTRAINT BanReasonBanned FOREIGN KEY(BanReasonId) REFERENCES BanReasons(BanReasonId)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    PRIMARY KEY (UserId, BanReasonId, Date)
+    PRIMARY KEY (UserId, BanReasonId, Start)
 );
 
 CREATE TABLE Play(
@@ -126,8 +132,54 @@ CREATE TABLE Ranking(
 
 CREATE TABLE Info(
     CurrentWeek     SMALLINT PRIMARY KEY,
-    InProgress      BOOLEAN NOT NULL
+    InProgress      BOOLEAN NOT NULL,
+    CurrentRulement SMALLINT NOT NULL,
+    CONSTRAINT WeekNow FOREIGN KEY(CurrentWeek) REFERENCES Weeks(WeekId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT RulementNow FOREIGN KEY(CurrentRulement) REFERENCES Rulements(RulementId)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
+
+CREATE TABLE Lobbies(
+    LobbyId         SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    Status          SMALLINT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE JoinedIn(
+     UserId          UUID,
+     LobbyId         SMALLINT,
+     Team            BOOLEAN NOT NULL,
+     CONSTRAINT UserJoinedIn FOREIGN KEY(UserId) REFERENCES Users(UserId)
+         ON DELETE CASCADE
+         ON UPDATE CASCADE,
+     CONSTRAINT LobbiesJoinedIn FOREIGN KEY(LobbyId) REFERENCES Lobbies(LobbyId)
+         ON DELETE CASCADE
+         ON UPDATE CASCADE,
+     PRIMARY KEY (UserId, LobbyId)
+);
+
+
+/*CREATE TRIGGER AddScore
+    AFTER INSERT ON Play
+    FOR EACH ROW
+    EXECUTE PROCEDURE add_points();
+
+CREATE FUNCTION add_points(MatchId, PlayerId)
+    LANGUAGE plpgsql
+    AS
+$$
+DECLARE
+BEGIN
+    UPDATE Ranking
+        SET Points=Points+(MatchId+)
+END;
+$$;*/
+
+
+/*check if switchcodes are right: https://www.sqlservercentral.com/forums/topic/explanation-of-like-0-9
+  https://docs.microsoft.com/en-us/previous-versions/sql/sql-server-2008-r2/ms179859(v=sql.105)?redirectedfrom=MSDN*/
 
 /*Numeric types: https://www.postgresql.org/docs/9.1/datatype-numeric.html*/
 /*Generated always as identity: https://www.postgresqltutorial.com/postgresql-identity-column/#:~:text=The%20GENERATED%20ALWAYS%20instructs%20PostgreSQL,value%20for%20the%20identity%20column.*/
@@ -135,3 +187,9 @@ CREATE TABLE Info(
   https://www.postgresqltutorial.com/postgresql-date/
  */
 /*Compare ban: https://www.postgresql.org/docs/8.0/functions-datetime.html*/
+
+/* date time postgresql
+   https://www.postgresql.org/docs/9.1/datatype-datetime.html
+   https://www.postgresql.org/docs/11/datatype-datetime.html
+   https://www.postgresql.org/docs/9.6/functions-datetime.html
+*/

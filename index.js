@@ -1,16 +1,16 @@
 require("dotenv").config();
 
 const fs = require('fs');
-const { Pool } = require('pg');
 const Discord = require('discord.js');
-
 const { prefix } = require('./config.json');
-const client = new Discord.Client();
 const cooldowns = new Discord.Collection();
 
-const utilities = require('./utilities/utilities');
+const client = new Discord.Client();
+const DiscordInterfaceUtilities = require("./utilities/dsiUtilities");
+DiscordInterfaceUtilities.INSTANCE.setClient(client);
 
-//Connection
+//Connection to the database
+const { Pool } = require('pg');
 const postgreSQLClient = new Pool({/*Pool allows to have more queryes, client just one and then it has to be throw out: https://stackoverflow.com/questions/48751505/how-can-i-choose-between-client-or-pool-for-node-postgres  */
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -18,7 +18,10 @@ const postgreSQLClient = new Pool({/*Pool allows to have more queryes, client ju
   }
 });
 postgreSQLClient.connect();
+const DatabaseUtilities = new require('./utilities/dbUtilities');
+DatabaseUtilities.INSTANCE.setConnection(postgreSQLClient);
 console.log("Database connected!");
+
 
 //Commands adding
 client.commands = new Discord.Collection();
@@ -35,6 +38,10 @@ client.login(process.env.DISCORD_TOKEN); //using env pass
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setActivity("with depression", {
+    type: "STREAMING",
+    url: "https://www.twitch.tv/darkrayta"
+  });
 })
 
 client.on('message', msg => {
@@ -78,7 +85,7 @@ client.on('message', msg => {
 
     try {
       //client.commands.get(command).execute(msg, args);
-      command.execute(msg, client, args, postgreSQLClient);//It uses dinamically the quantity of arguments, execute/run
+      command.execute(msg, args);//It uses dinamically the quantity of arguments, execute/run
     } catch(error){
         console.error(error);
         msg.reply('there was an error trying to execute that command!');

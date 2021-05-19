@@ -1,6 +1,21 @@
 module.exports = {
+	playRoles:{
+		ab:{
+			"name": "anchorback",
+			"id": "727452644842668033"
+		},
+		ms:{
+			"name": "midsupport",
+			"id": "727452644532027473"
+		},
+		fs:{
+			"name": "frontslayer",
+			"id": "727452644272111644"
+		}
+	},
     damn:':regional_indicator_d::regional_indicator_a::regional_indicator_m::regional_indicator_n:',
     loser:':regional_indicator_l::regional_indicator_o::regional_indicator_s::regional_indicator_e::regional_indicator_r:',
+	kazoo:'Someone need a Kazoo: https://www.youtube.com/watch?v=RzbEWCMVndM&t=5s',
     first_place:'🥇', second_place:'🥈', third_place:'🥉',
 	a: '🇦', b: '🇧', c: '🇨', d: '🇩',
 	e: '🇪', f: '🇫', g: '🇬', h: '🇭',

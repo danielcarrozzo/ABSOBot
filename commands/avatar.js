@@ -1,8 +1,9 @@
 module.exports = {
     name: 'avatar',
+    display: true,
     aliases: ['icon', 'pfp', 'propic'],
 	description: 'Receive the link of the user avatar',
-	execute(msg, client, args) {
+	execute(msg, args) {
         if (!msg.mentions.users.size) {
           return msg.channel.send(`Your avatar: <${msg.author.displayAvatarURL({ format: "png", dynamic: true })}>`);
         }

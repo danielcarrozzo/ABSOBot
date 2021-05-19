@@ -1,5 +1,46 @@
 {
-    "prefix": "-",
-    "favourite_song": "ANIMALS DEI MAROON 5",
-    "default_color": "#771177"
+    "prefix": ".",
+    "creator": "246710308817731585",
+    "favouriteSong": "ANIMALS DEI MAROON 5",
+    "defaultColor": "#771177",
+    "discordServer": "725389506215149639",
+    "channelRanking": "725398092358090772",
+    "channelsLobbies": [
+        "829412870700793887",
+        "829419027012124702",
+        "829419142212878376",
+        "829430369928347679",
+        "829430440616001557"
+    ],
+    "rolesLobbies": [
+        {
+            "alpha": "829411564150587423",
+            "beta": "829412211515719711"
+        },
+        {
+            "alpha": "829412271495184464",
+            "beta": "829412279040606260"
+        },
+        {
+            "alpha": "829412297712730203",
+            "beta": "829412300318310460"
+        },
+        {
+            "alpha": "829425745151262750",
+            "beta": "829425747398885448"
+        },
+        {
+            "alpha": "829425755741487165",
+            "beta": "829425758308794378"
+        }
+    ],
+    "messagesStatus": {
+        "generalStats": "",
+        "freeLobbies": "843020192481148928"
+    },
+    "channelComments": "842431449197969420",
+    "roleParticipants": "824227129590939658",
+    "numberWeeks": 8,
+    "numberPlayersPerMatch": 2,
+    "numberLobbies": 5
 }

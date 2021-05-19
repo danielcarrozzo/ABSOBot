@@ -1,7 +1,8 @@
 module.exports = {
 	name: 'prune',
+    display: false,
 	description: 'Delete some msgs',
-	execute(client, msg, args) {//just if you can manage msgs
+	execute(msg, args) {//just if you can manage msgs
         const amount = parseInt(args[0]);//for 2-100 an 1-99 problem you can also add a +1 here
       
         if (isNaN(amount)) {
