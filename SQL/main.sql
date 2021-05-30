@@ -8,7 +8,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE BanReasons(
     BanReasonId     SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     Explanation     VARCHAR(255) NOT NULL,
-    DefaultBantime  SMALLINT NOT NULL
+    DefaultBantime  INTERVAL NOT NULL
 );
 
 CREATE TABLE Users(
@@ -78,8 +78,8 @@ CREATE TABLE Matches(
 CREATE TABLE Banned(
     UserId          UUID,
     BanReasonId     SMALLINT,
-    Start           DATE DEFAULT NOW(),
-    Period          Interval NOT NULL,
+    Start           TIMESTAMP DEFAULT NOW(),
+    Period          INTERVAL NOT NULL,
     Comment         VARCHAR(255),
     CONSTRAINT UserBanned FOREIGN KEY(UserId) REFERENCES Users(UserId)
         ON DELETE CASCADE
@@ -106,12 +106,8 @@ CREATE TABLE Play(
 CREATE TABLE Penalties(
     UserId          UUID,
     MatchId         UUID,
-    RulementId      SMALLINT NOT NULL,
     Comment         VARCHAR(255),
     CONSTRAINT UserPlayPenalized FOREIGN KEY(UserId, MatchId) REFERENCES Play(UserId, MatchId)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    CONSTRAINT RulementPenalty FOREIGN KEY(RulementId) REFERENCES Rulements(RulementId)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     PRIMARY KEY (UserId, MatchId)
@@ -144,7 +140,8 @@ CREATE TABLE Info(
 
 CREATE TABLE Lobbies(
     LobbyId         SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    Status          SMALLINT NOT NULL DEFAULT 0
+    Status          SMALLINT NOT NULL DEFAULT 0,
+    Comment         VARCHAR(255)
 );
 
 CREATE TABLE JoinedIn(

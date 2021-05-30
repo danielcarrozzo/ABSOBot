@@ -2,67 +2,65 @@ const Discord = require('discord.js');
 const DatabaseUtilities = require("../utilities/dbUtilities");
 const DiscordInterfaceUtilities = require("../utilities/dsiUtilities");
 const { wonderfulMatchmaking } = require("../utilities/externalUtilities");
-const { defaultColor, numberPlayersPerMatch, discordServer, messagesStatus/*, number_lobbies*/ } = require('../config.json');
-const { playRoles } = require('../specialCharacters');
+const { defaultColor, numberPlayersPerMatch, discordServer, messagesStatus, friendcode } = require('../config.json');
+const { positioningEmojis } = require('../specialCharacters');
 
 module.exports = {
     name: 'startlobby',
-    display: true,
+    display: false,
     aliases: [ "sl" ],
     cooldown: 5,
-    description: "Start a new tournament lobby",
+    description: "Send a message for the lobby",
+    usage: "",
+    warning: "",
     execute: async function(msg, args) {
-        return createMatch(msg);
+        if(await DatabaseUtilities.INSTANCE.isAdmin(msg.author.id)){
+            return createMatch(msg);
+        }
     }
 }
 
 createMatch=async function(msg){
     //Create lobby message
-    let embed = new Discord.MessageEmbed()
+    let embeded = new Discord.MessageEmbed()
         .setTitle("Lobby")
         .setDescription("Add a reaction ✅ to partecipate")
         .setColor(defaultColor)
         .setTimestamp(Date.now());
-    const lobbymsg = await msg.channel.send(embed);
+    const lobbymsg = await msg.channel.send(embeded);
     await lobbymsg.react('✅');
 
     //Collection of partecipants reactions
     const filter = async (reaction, user) => {
         //Check subscribed
-        const isSignup=await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id);//Can't put await async function with .length near
-        if(!isSignup.length){
-            await reaction.users.remove(user.id);//Find a way to remove from the collection
-            const dmChannel=await user.createDM();
-            await dmChannel.send(`You are not subscribed, why are you seeing this channel?!`);
+        if((await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id)) === undefined){
+            reaction.users.remove(user.id);
+            (await user.createDM()).send(`You are not subscribed, why are you seeing this channel?!`);
             return false;
         }
         //Check if it's banned
         if(await DatabaseUtilities.INSTANCE.isBanned(user.id)){
-            await reaction.users.remove(user.id);
-            const dmChannel=await user.createDM();
-            await dmChannel.send(`You are banned for a little...`);
+            reaction.users.remove(user.id);
+            (await user.createDM()).send(`You are banned for a little...`);
             return false;
         }
-        //matches per day
+        //Check if the player can play another match today
         if(await DatabaseUtilities.INSTANCE.isAtLimitOfMatchesToday(user.id)){
-            await reaction.users.remove(user.id);
-            const dmChannel=await user.createDM();
-            await dmChannel.send(`You have already played the max limit of matches today`);
+            reaction.users.remove(user.id);
+            (await user.createDM()).send(`You have already played the max limit of matches today`);
             return false;
         }
-        //Check if it's already in a lobby <-- easy cause I have a message one by one
-        if(DatabaseUtilities.INSTANCE.isUserInALobby(user.id).length){
-            await reaction.users.remove(user.id);
-            const dmChannel=await user.createDM();
-            await dmChannel.send(`You are already in a lobby`);
+        //Check if it's already in a lobby (It's already started and in the database because there is just one message to create a lobby)
+        if(await DatabaseUtilities.INSTANCE.isUserInALobby(user.id)){
+            reaction.users.remove(user.id);
+            (await user.createDM()).send(`You are already in a lobby`);
             return false;
         }
         //Check if there is a free lobby
-        if(!await DatabaseUtilities.INSTANCE.getStartableLobbies()){
-            //remove reaction
-            console.log(collector);
-            await reaction.users.remove(user.id);
-            console.log(collector);
+        freeLobby=await DatabaseUtilities.INSTANCE.getStartableLobbies();
+        console.log(freeLobby);
+        if(!freeLobby){
+            reaction.users.remove(user.id);
             msg.channel.send(`Oh damn, someone tried to participate but there are no free lobbies, pls try again later.\nYou can check the status in <#${messagesStatus.free_lobbies}>`);
             return false;
         }
@@ -72,67 +70,44 @@ createMatch=async function(msg){
     const collector = lobbymsg.createReactionCollector(filter, { dispose: true, max: numberPlayersPerMatch });
 
     collector.on('collect', async (reaction, user) => {
-        //return dm
-        DiscordInterfaceUtilities.INSTANCE.getUser(user.id).then((userGot) =>{
-            embed=new Discord.MessageEmbed(embed).addField(userGot.tag, "placeholder switch code");
-            lobbymsg.edit(embed);
-        })
+        embeded = new Discord.MessageEmbed(embeded).addField((await DiscordInterfaceUtilities.INSTANCE.getUser(user.id)).tag, `Current week points: ${(await DatabaseUtilities.INSTANCE.getCurrentRanking(user.id)).points}`);
+        await lobbymsg.edit(embeded);
     });
 
-    collector.on('remove', (reaction, user) =>{
-        DiscordInterfaceUtilities.INSTANCE.getUser(user.id).then((userGot) =>{
-            embed=new Discord.MessageEmbed(embed).spliceFields(0, 8, embed.fields.filter((field) => field.name != userGot.tag));
-            lobbymsg.edit(embed);
-        })
+    collector.on('remove', async (reaction, user) =>{
+        embeded = new Discord.MessageEmbed(embeded).spliceFields(0, 8, embeded.fields.filter(async (field) => field.name !== (await DiscordInterfaceUtilities.INSTANCE.getUser(user.id)).tag));
+        await lobbymsg.edit(embeded);
     });
 
-    collector.on('end', collected => {
-        embed.setFooter(`Match started in ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60/60)} hours ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60%60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);
-        lobbymsg.edit(embed);
+    collector.on('end', async collected => {
+        embeded.setFooter(`Match started in ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60/60)} hours ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60%60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);
+        //await lobbymsg.edit(embeded);
+
+        //Send another message
         createMatch(lobbymsg);
-        return startingMatch(msg, collector.users);//gives the ids
-    });
-}
 
-startingMatch =
-    async (msg, users) => {
-        let usersData=[];
+        //Take a lobby
+        const lobby = await DatabaseUtilities.INSTANCE.getStartableLobbies(); //Semaphore if I haven't just one message for create a lobby and a check if there are not (now I make it when you react)
+        await DatabaseUtilities.INSTANCE.setLobbyStatus(lobby, 1);
+
+        //Collecting users from database
+        let users=[];
         await Promise.all(
-            users.map(async (user) => {
-                const tempUser= await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id);
-                usersData.push(tempUser[0]);
+            collector.users.map(async (user) => {
+                users.push((await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id)));
             })
         )
-        usersData = wonderfulMatchmaking(usersData);
-        const lobby=await DatabaseUtilities.INSTANCE.startNewMatch(usersData);
-        if(!lobby){
-            return console.log("Out");
-        }
-        return startNewMatch(msg, lobby, usersData);
-    }
 
-startNewMatch =
-    async (msg, lobby, usersData) => {
+        //Matchmaking
+        users = wonderfulMatchmaking(users);
+
+        //Get lobby data and Discord server platforms
         const lobbyData = DiscordInterfaceUtilities.INSTANCE.getLobbyData(lobby);
-        const discordGuild = await DiscordInterfaceUtilities.INSTANCE.getTournamentGuild(discordServer);
+        const discordGuild = await DiscordInterfaceUtilities.INSTANCE.getGuild(discordServer);
         const roleAlpha = await DiscordInterfaceUtilities.INSTANCE.getRole(discordGuild, lobbyData.alpha);
         const roleBeta = await DiscordInterfaceUtilities.INSTANCE.getRole(discordGuild, lobbyData.beta);
-        await Promise.all(
-            usersData.map(async (userData)=>{
-                try{
-                    const member = await DiscordInterfaceUtilities.INSTANCE.getMember(discordGuild, userData.discordid);
-                    if(userData.team){
-                        member.roles.add(roleAlpha);
-                    }else{
-                        member.roles.add(roleBeta);
-                    }
-                }catch(err){
-                    console.log(err);
-                }
-            })
-        )
-        //const lobby_channel = await this.dsi_get_channel(this.dsi_get_lobby_channel(lobby));
-        //await lobby_channel.bulkDelete(99, true);
+
+        //Prepare the message to send in the lobby channel
         let embed = new Discord.MessageEmbed()
             .setTitle("Lobby")
             .setDescription("Teams")
@@ -140,20 +115,46 @@ startNewMatch =
             .setTimestamp(Date.now());
         let alphaTeamString="";
         let betaTeamString="";
+
+        //Insert the player in the lobby on db, giving the role and adding it's name to the strings on the message to send in the channel
         await Promise.all(
-            usersData.map(async userData => {
+            users.map(async (userData)=>{
                 const user = await DiscordInterfaceUtilities.INSTANCE.getUser(userData.discordid);
-                if(userData.team){
-                    alphaTeamString+=`${user.tag} ${(userData.anchorback?`<:${playRoles.ab.name}:${playRoles.ab.id}>`:``)} ${(userData.midsupport?`<:${playRoles.ms.name}:${playRoles.ms.id}>`:``)} ${(userData.frontslayer?`<:${playRoles.fs.name}:${playRoles.fs.id}>`:``)}`
-                }else{
-                    betaTeamString+=`${user.tag} ${(userData.anchorback?`<:${playRoles.ab.name}:${playRoles.ab.id}>`:``)} ${(userData.midsupport?`<:${playRoles.ms.name}:${playRoles.ms.id}>`:``)} ${(userData.frontslayer?`<:${playRoles.fs.name}:${playRoles.fs.id}>`:``)}`;
+                try{
+                    //Add role and add its profile on the embed to send
+                    const member = await DiscordInterfaceUtilities.INSTANCE.getMember(discordGuild, userData.discordid);
+                    let codeToStamp="";
+                    if(userData.friendcode){
+                        for(let i=0;i<friendcode.friendcodeSize; i+=friendcode.sectionSize){
+                            codeToStamp+=(i!==0?"-":"")+userData.friendcode.substr(i, friendcode.sectionSize);
+                        }
+                    }
+                    if(userData.team){
+                        member.roles.add(roleAlpha);
+                        alphaTeamString+=`${user.tag} ${(userData.anchorback?`<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>`:``)} ${(userData.midsupport?`<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`:``)} ${(userData.frontslayer?`<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`:``)}\n${codeToStamp}`
+                    }else{
+                        member.roles.add(roleBeta);
+                        betaTeamString+=`${user.tag} ${(userData.anchorback?`<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>`:``)} ${(userData.midsupport?`<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`:``)} ${(userData.frontslayer?`<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`:``)}\n${codeToStamp}`
+                    }
+                    //Insert in Joined In
+                    DatabaseUtilities.INSTANCE.insertJoinedIn(userData.userid, lobby, userData.team);
+                }catch(err){
+                    console.log(err);
                 }
             })
-        );
+        )
+        //const lobby_channel = await this.dsi_get_channel(this.dsi_get_lobby_channel(lobby));
+        //await lobby_channel.bulkDelete(99, true);
+
         embed.addField("Team Alpha", alphaTeamString);
         embed.addField("Team Beta", betaTeamString);
         const channelLobby = await DiscordInterfaceUtilities.INSTANCE.getChannel(lobbyData.channel);
         return channelLobby.send(embed);
+        //return startingMatch(msg, );//gives the ids
+    });
+}
+
+
         //await lobbymsg.react('✅');
 
         //const res = await db_utilities.INSTANCE.db_query_runner('SELECT * FROM Ranking INNER JOIN Users ON ranking.userid = users.userid WHERE WeekId='+args[0]+' ORDER BY Points ASC;');
@@ -176,5 +177,3 @@ startNewMatch =
         //matchmaking
         //pusho la query
         //ruoli agli 8
-
-    }

@@ -7,6 +7,11 @@ const emojiCharacters = require('../specialCharacters');
 module.exports={
     name: 'say',
     display: true,
+    aliases: [  ],
+    cooldown: 1,
+    description: "Tell to the bot to say something, there are some special strings to send some special aswers",
+    usage: "Hola",
+    warning: "You can type it just in this ways: 012345678910, 0123-4567-8910 and 0123 4567 8910",
     execute: async function (msg, args){
         try{
             await msg.channel.send(emojiCharacters[args[0].toLowerCase()]);

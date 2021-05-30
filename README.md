@@ -11,3 +11,5 @@ Embed=Discord embed messages
 Under bot processes and UI usually are not devided, this is cause by the structure in how Discord bot are structured
 Functionalities could be divided are separated in utilities folder
 Database utility functions are not accessible in any direct way to users
+
+Coming updates: see

@@ -20,197 +20,185 @@ class DatabaseUtilities {
     queryRunner =
         async (query) => {
             console.log(query);
-            return await this.postgress.query(query);
+            return (await this.postgress.query(query)).rows;
         }
+
+    async ping(){
+        await this.postgress.query(`SELECT 1`);
+    }
 
     isAdmin =
-        async (discordId) => {
-            const res = await this.queryRunner(`SELECT Users.UserId
-                                                        FROM Users JOIN Admins ON Users.UserId=Admins.UserId
-                                                        WHERE Users.DiscordId='${discordId}';`);
-            return res.rows.length;//res.length > 0
-        }
+        async discordUserId => (await this.queryRunner(`SELECT Users.UserId
+                                                              FROM Users JOIN Admins ON Users.UserId=Admins.UserId
+                                                              WHERE Users.DiscordId='${discordUserId}';`)).length
 
     isBanned =
-        async (discordId) => {
-            const res = await this.queryRunner(`SELECT Users.UserId
-                                                        FROM Users JOIN Banned ON Users.UserId=Banned.UserId
-                                                        WHERE Users.DiscordId='${discordId}';`);
-            return res.rows.length;
+        async discordUserId => (await this.queryRunner(`SELECT Users.UserId
+                                                              FROM Users JOIN Banned ON Users.UserId=Banned.UserId
+                                                              WHERE Users.DiscordId='${discordUserId}' AND NOW()<Start+Period;`)).length;
+
+    isUserInALobby =
+        async discordUserId => {
+            const lobby = (await this.queryRunner(`SELECT LobbyId
+                                                        FROM Users JOIN JoinedIn ON Users.UserId = JoinedIn.UserId
+                                                        WHERE DiscordId='${discordUserId}';`))
+            if(lobby.length){
+                return lobby[0].lobbyid;
+            }else{
+                return 0;
+            }
+        }
+        
+
+    isAtLimitOfMatchesToday =
+        async (discordUserId) => {
+            Promise.all(
+                [this.queryRunner(`SELECT Users.UserId, DateTimeInsert 
+                                            FROM (Users JOIN Play ON Users.UserId=Play.UserId)
+                                                JOIN Matches ON Play.MatchId=Matches.MatchId
+                                            WHERE Date(DateTimeInsert) = DATE(NOW()) AND Users.DiscordId='${discordUserId}'`),//matchesPlayedTodayPromise
+                    this.getInfo()]//rulement
+            ).then(async values => values[0].length===(await this.getRulementRules(values[1].currentrulement)).maxgamestoplayinaday)
         }
 
-    insertPlayer = async (discordId) => await this.queryRunner(`INSERT INTO Users(DiscordId) VALUES('${discordId}');` );
+    getInfo = async () => (await this.queryRunner(`SELECT * FROM Info;`))[0];
 
-    insertRanking = async (currentWeek, userId) => await this.queryRunner(`INSERT INTO Ranking(WeekId, UserId, Points) VALUES(${currentWeek}, '${userId}', DEFAULT);`);
-
-    setFriendCode =
-        async (fc) => await this.queryRunner(`UPDATE Users SET FriendCode=${fc};`);
-
-    getInfo =
-        async () => {
-            const res = await this.queryRunner(`SELECT * FROM Info;`);
-            return res.rows[0];
-        }
+    getRulementRules =
+        async rulementId => (await this.queryRunner(`SELECT *
+                                                        FROM Rulements
+                                                        WHERE RulementId=${rulementId};`))[0];
 
     getUserByDiscordId =
-        async (discordId) => {
-            const user = await this.queryRunner(`SELECT *
-                                                    FROM Users
-                                                    WHERE discordid='${discordId}';`);// msg.guild.members.
-            console.log(user.rows);console.log(user.rows.length);
-            return user.rows;
-        }
+        async discordUserId => (await this.queryRunner(`SELECT *
+                                                             FROM Users
+                                                             WHERE discordid='${discordUserId}';`))[0];// msg.guild.members.
 
-    addPoints =
-        async (participant, args) => {
-            const info = await this.getInfo();
-            const rulement = await this.getRulementRules(info.currentrulement);
-            await this.queryRunner(`UPDATE Ranking
-                                            SET Points=Points+
-                                                       ${(participant.team?args[0]:args[1])*rulement.wonmatchpoint
-                                                       +((args[0]>args[1]&&participant.team)||(args[0]<args[1]&&!participant.team)?rulement.winbonus:0)}
-                                            WHERE UserId='${participant.userid}' AND WeekId=${info.currentweek}`)
+    getWeeks = async () => (await this.queryRunner(`SELECT * FROM Weeks;`));
+
+    getRulements = async () => (await this.queryRunner(`SELECT * FROM Rulements;`));
+
+    getRanking =
+        async week => await this.queryRunner(`SELECT *
+                                                        FROM Ranking JOIN Users ON ranking.userid = users.userid
+                                                        WHERE WeekId=${week}
+                                                        ORDER BY Points DESC;`);
+
+    getIndexWeek =
+        async week => {
+            const indexes = await this.queryRunner(`SELECT MAX(indexid)
+                                                        FROM Matches
+                                                        WHERE WeekId=${week}`);
+            if(isNaN(indexes[0].max)) return 1
+            return indexes[0].max+1;
         }
 
     getStartableLobbies =
         async () => {
-            /*for(let i=0; i<number_lobbies; i++){
-                const res = await this.queryRunner("SELECT LobbyId FROM Lobbies WHERE NOT EXISTS(SELECT LobbyId FROM JoinedIn)")
-                console.log(res);
-                if(res.rows.length>0){
-                    return res.rows[0].LobbyId;
-                }
-                return 0;//(false) It has not to happen, just in case there is something with prebuilt does not run
-            }*/
-            try{
-                const res=await this.queryRunner(`SELECT LobbyId
-                                                        FROM Lobbies
-                                                        WHERE status=0;`);//.then( res => {
-                    //console.log(res);
-                    //console.log(res.rows[0].lobbyid);
-                    return res.rows[0].lobbyid;
-                //});
-            }catch(err){
-                console.log(err);
+            const freeLobbies = await this.queryRunner(`SELECT LobbyId
+                                                                FROM Lobbies
+                                                                WHERE status=0;`) //await .. .then gave me errors
+            if(freeLobbies.length){
+                return freeLobbies[0].lobbyid;
+            }else{
                 return 0;
             }
         }
 
-    isAtLimitOfMatchesToday =
-        async (discordId) => {
-            const matchesPlayedToday=await this.queryRunner(`SELECT Users.UserId, DateTimeInsert
-                                                                    FROM (Users JOIN Play ON Users.UserId=Play.UserId)
-                                                                        JOIN Matches ON Play.MatchId=Matches.MatchId
-                                                                    WHERE Date(DateTimeInsert) = DATE(NOW()) AND Users.DiscordId='${discordId}';`);
-            const info = await this.getInfo();
-            const rulement = await this.getRulementRules(info.currentrulement);
-            return matchesPlayedToday.rows.length===rulement.maxgamestoplayinaday;
-        }
-
-    getRulementRules =
-        async (rulementId) => {
-            const res = await this.queryRunner(`SELECT *
-                                                        FROM Rulements
-                                                        WHERE RulementId=${rulementId};`)
-            return res.rows[0];
-        }
-
-    isUserInALobby =
-        async(discordId) => {
-            const res = await this.queryRunner(`SELECT *
-                                                        FROM Users JOIN JoinedIn ON Users.UserId = JoinedIn.UserId
-                                                        WHERE DiscordId='${discordId}';`)
-            return res.rows;
-        }
-
     getUsersInALobby =
-        async (lobby) => {
-            const res = await this.queryRunner(`SELECT Users.*, Team
+        async lobby => await this.queryRunner(`SELECT Users.*, Team
                                                         FROM Users JOIN JoinedIn ON Users.UserId = JoinedIn.UserId
-                                                        WHERE LobbyId=${lobby}`);
-            return res.rows;
-        }
+                                                        WHERE LobbyId=${lobby};`)
 
-    setLobbyStatus =
-        async(lobbyid, status) =>{
-            this.queryRunner(`UPDATE Lobbies
-                                    SET Status=${status}
-                                    WHERE LobbyId=${lobbyid};`)
-        }
-
-    startNewMatch =
-        async (users) => {
-            const lobby = await this.getStartableLobbies();
-            if(lobby){
-                this.setLobbyStatus(lobby, 1);
-                //console.log(players);
-                    //console.log(users)
-                await Promise.all(
-                    users.map(async (user) => {
-                        //const user = await this.db_get_user(player);
-                        await this.queryRunner(`INSERT INTO JoinedIn(UserId, LobbyId, Team)
-                                                        VALUES('${user.userid}', ${lobby}, ${user.team});`);
-                    })
-                );
-            }else{
-                //out of lobby
-                console.log("Out");
-            }
-            return lobby;
-        }
+    getBanReasonInfo = async banReasonId => (await this.queryRunner(`SELECT * FROM BanReasons WHERE BanReasonId=${banReasonId}`))[0];
 
     getMatchesToPlay =
-        async () => {
-            const info = await this.getInfo();
+        async () => (await this.getRulementRules((await this.getInfo()).currentrulement)).matchestoplay;
+
+    getLobby = async (lobbyId) => (await this.queryRunner(`SELECT * FROM Lobbies WHERE LobbyId=${lobbyId}`))[0];
+
+    getCurrentRanking =
+        async (discordId) => (await this.queryRunner(`SELECT Points
+                                                            FROM (Info JOIN Ranking ON CurrentWeek=WeekId) JOIN Users ON Ranking.UserId=Users.UserId
+                                                            WHERE DiscordId='${discordId}';`))[0];
+
+
+
+
+    //const matchesPlayedTodayPromise = this.queryRunner(...
+    //const info = await this.getInfo();
+    //const rulement = await this.getRulementRules(info.currentrulement);
+    //const matchesPlayedToday = await matchesPlayedTodayPromise;
+
+    addPoints =
+        async (participant, args) => {
+            const info = (await this.getInfo());
             const rulement = await this.getRulementRules(info.currentrulement);
-            return rulement.matchestoplay;
+            return this.queryRunner(`UPDATE Ranking
+                                            SET Points=Points+
+                                                       ${(participant.team?args[0]:args[1])*rulement.wonmatchpoint + (args[0]+args[1]<rulement.matchestoplay?((args[0]>args[1]&&participant.team)||(args[0]<args[1]&&!participant.team)?rulement.winbonus:0):0)}
+                                            WHERE UserId='${participant.userid}' AND WeekId=${info.currentweek}`);
         }
 
-    isInThisLobby =
-        async (discordid, lobby) => {
-            const res = await this.queryRunner(`SELECT Users.UserId
-                                                        FROM Users JOIN JoinedIn ON Users.UserId=JoinedIn.UserId
-                                                        WHERE DiscordId='${discordid}' AND LobbyId=${lobby}`)
-            return res.rows.length;
+    removePoints =
+        async (participant) => {
+            const info = (await this.getInfo());
+            const rulement = await this.getRulementRules(info.currentrulement);
+            const nPenalties = (await this.getPenaltiesOfTheWeek(participant, info.currentweek)).length;
+            return this.queryRunner(`UPDATE Ranking
+                                            SET Points=Points-${(nPenalties?(nPenalties===1?rulement.secondabandonmentmalus:rulement.thirdabandonmentmalus):rulement.firstabandonmentmalus)}
+                                            WHERE UserId='${participant}' AND WeekId=${info.currentweek}`)
         }
 
-    getRanking =
-        async (week) => {
-            const res= await this.queryRunner(`SELECT *
-                                                        FROM Ranking JOIN Users ON ranking.userid = users.userid
-                                                        WHERE WeekId=${week}
-                                                        ORDER BY Points ASC;`);
-            return res.rows;
-        }
+    getPenaltiesOfTheWeek =
+        async (participant, weekId) => await this.queryRunner(`SELECT * FROM Penalties JOIN Matches ON Penalties.MatchId=Matches.MatchId WHERE UserId='${participant}' AND WeekId=${weekId}`)
 
-    createMatch =
-        async (lobbyid, args) => {
+    setLobbyStatus =
+        async (lobbyid, status) => await this.queryRunner(`UPDATE Lobbies
+                                                            SET Status=${status}
+                                                            WHERE LobbyId=${lobbyid};`)
+
+    setRoles = async (msg, args) => await this.queryRunner(`UPDATE Users SET anchorback=${(args[0]==='t').toString()}, midsupport=${(args[1]==='t').toString()}, frontslayer=${(args[2]==='t').toString()} WHERE discordid='${msg.author.id}';`);
+
+    setInfo = async args => await this.queryRunner(`UPDATE Info SET CurrentWeek=${args[0]}, InProgress=${args[1]}, CurrentRulement=${args[2]}`);
+
+    existsBanReason =
+        async banReasonId => await this.queryRunner(`SELECT * FROM BanReasons WHERE BanReasonId=${banReasonId}`);
+
+    insertPlayer = async discordUserId => await this.queryRunner(`INSERT INTO Users(DiscordId) VALUES('${discordUserId}') RETURNING UserId;`)
+
+    insertRanking = async (currentWeek, userId) => await this.queryRunner(`INSERT INTO Ranking(WeekId, UserId, Points) VALUES(${currentWeek}, '${userId}', DEFAULT);`)
+
+    insertJoinedIn = async (userId, lobbyId, teamUser) => await this.queryRunner(`INSERT INTO JoinedIn(UserId, LobbyId, Team) VALUES('${userId}', ${lobbyId}, ${teamUser});`);
+
+    insertMatch =
+        async (lobbyid, args, event, comment) => {
             const info = await this.getInfo();
             const index = await this.getIndexWeek(info.currentweek);
-            const res=await this.queryRunner(`INSERT INTO Matches(MatchId, WeekId, IndexId, TeamAlphaScore, TeamBetaScore, RulementId, DatetimeInsert)
-                                            VALUES(default, ${info.currentweek}, ${index}, ${args[0]}, ${args[1]}, ${info.currentrulement}, default) RETURNING MatchId;`);
-            return res.rows[0].matchid;
+            return (await this.queryRunner(`INSERT INTO Matches(MatchId, WeekId, IndexId, TeamAlphaScore, TeamBetaScore, RulementId, DatetimeInsert, EventId, Comment) VALUES(default, ${info.currentweek}, ${index}, ${args[0]}, ${args[1]}, ${info.currentrulement}, default, ${event}, ${comment}) RETURNING MatchId;`))[0].matchid;
         }
 
-    addUsersPlayMatch =
-        async (participant, matchId) => {
-            await this.queryRunner(`INSERT INTO Play(UserId, MatchId, Team)
-                                            VALUES('${participant.userid}', '${matchId}', ${participant.team})`);
-        }
+    insertPlay = async (userId, matchId, teamUser) => await this.queryRunner(`INSERT INTO Play(UserId, MatchId, Team) VALUES('${userId}', '${matchId}', ${teamUser})`);
 
-    getIndexWeek =
-        async (week) => {
-            const index = await this.queryRunner(`SELECT MAX(indexid)
-                                                        FROM Matches
-                                                        WHERE WeekId=${week}`);
-            if(isNaN(index.rows[0].max)) return 1
-            return index.rows[0].max+1;
-        }
+    insertPenalty = async (userId, matchId) => await this.queryRunner(`INSERT INTO Penalties(UserId, MatchId) VALUES('${userId}', '${matchId}')`)
 
-    deletePlayersInLobby =
-        async (lobby) => {
-            await this.queryRunner(`DELETE FROM JoinedIn WHERE LobbyId=${lobby}`)
+    setFriendCode = async (discordId, friendCode) => await this.queryRunner(`UPDATE Users SET FriendCode=${friendCode} WHERE DiscordId='${discordId}';`);
+
+    setComment = async (lobbyId, comment) => await this.queryRunner(`UPDATE Lobbies SET Comment='${comment}' WHERE LobbyId=${lobbyId};`)
+
+    deletePlayersInLobby = async lobby => await this.queryRunner(`DELETE FROM JoinedIn WHERE LobbyId=${lobby}`)
+
+    insertBanned = async (discordUserId, banReasonId, period, comment) =>{
+        let userId = (await this.getUserByDiscordId(discordUserId)).userid;
+        if(userId === undefined){
+            userId = await this.insertPlayer(discordUserId);
         }
+        //if(period === 'default'){
+        //    period = (await this.getBanReasonInfo(banReasonId)).defaultbantime.years;
+        //    console.log(period);
+        //    console.log((await this.getBanReasonInfo(banReasonId)))
+        //}
+        await this.queryRunner(`INSERT INTO Banned(UserId, BanReasonId, Start, Period, Comment) VALUES('${userId}', ${banReasonId}, default, ${(period==='default'?`(SELECT defaultbantime FROM BanReasons WHERE BanReasonId=${banReasonId})`:`'${period}'`)}, '${comment}')`)
+    }
 }
 
 module.exports = DatabaseUtilities;

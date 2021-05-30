@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const DatabaseUtilities = require("../utilities/dbUtilities");
-const { defaultColor } = require('../config.json');
+const { defaultColor, friendcode } = require('../config.json');
 
 module.exports={
     name: 'setfriendcode',
@@ -11,9 +11,7 @@ module.exports={
     usage: "0123",
     warning: "You can type it just in this ways: 012345678910, 0123-4567-8910 and 0123 4567 8910",
     execute: async function(msg, args){
-        try {//TODO testare
-            const codeSize=12;
-            const sectionSize=4;
+        try {
             let fc;
             if(args.length===1){
                 fc=args[0];
@@ -26,13 +24,13 @@ module.exports={
             const embed = new Discord.MessageEmbed()
                 .setColor(defaultColor)
                 .setTimestamp(Date.now());
-            console.log(!isNaN(fc) && fc.length===codeSize);
-            if(!isNaN(fc) && fc.length===codeSize){//https://www.w3schools.com/jsref/jsref_isnan.asp
+            console.log(!isNaN(fc) && fc.length===friendcode.friendcodeSize);
+            if(!isNaN(fc) && fc.length===friendcode.friendcodeSize){//https://www.w3schools.com/jsref/jsref_isnan.asp
                 let codeToStamp="";
-                for(i=0;i<codeSize; i+=sectionSize){
-                    codeToStamp+=(i!==0?"-":"")+fc.substr(i, sectionSize);
+                for(let i=0;i<friendcode.friendcodeSize; i+=friendcode.sectionSize){
+                    codeToStamp+=(i!==0?"-":"")+fc.substr(i, friendcode.sectionSize);
                 }
-                await DatabaseUtilities.INSTANCE.setFriendCode(fc);
+                await DatabaseUtilities.INSTANCE.setFriendCode(msg.author.id, fc);
                 embed.setTitle("Now your current friend code is: ")
                     .addField("Nintendo Switch /*emoji*/", codeToStamp, false)
                 return msg.channel.send(embed);

@@ -4,6 +4,8 @@
     "favouriteSong": "ANIMALS DEI MAROON 5",
     "defaultColor": "#771177",
     "discordServer": "725389506215149639",
+    "channelComments": "842431449197969420",
+    "channelPastMatches": "845581707301748736",
     "channelRanking": "725398092358090772",
     "channelsLobbies": [
         "829412870700793887",
@@ -38,9 +40,16 @@
         "generalStats": "",
         "freeLobbies": "843020192481148928"
     },
-    "channelComments": "842431449197969420",
+    "roleEligible": "848542954993352775",
     "roleParticipants": "824227129590939658",
-    "numberWeeks": 8,
+    "rolesPositioning": {
+        "ab": "730053826505080842",
+        "ms": "730053773807976538",
+        "fs": "730053673576693771"
+    },
     "numberPlayersPerMatch": 2,
-    "numberLobbies": 5
+    "friendcode": {
+        "friendcodeSize": 12,
+        "sectionSize" : 4
+    }
 }

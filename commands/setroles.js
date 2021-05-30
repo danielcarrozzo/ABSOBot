@@ -1,7 +1,8 @@
 const Discord = require('discord.js');
 const DatabaseUtilities = require("../utilities/dbUtilities");
-const { defaultColor } = require('../config.json');
-const { playRoles } = require('../specialCharacters');
+const DiscordInterfaceUtilities = require("../utilities/dsiUtilities");
+const { defaultColor, rolesPositioning } = require('../config.json');
+const { positioningEmojis } = require('../specialCharacters');
 
 module.exports={
     name: 'setroles',
@@ -16,14 +17,17 @@ module.exports={
     execute: async function(msg, args){
         if(args.length===3){
             try {
-                await DatabaseUtilities.INSTANCE.queryRunner(`UPDATE Users SET anchorback=${(args[0]==='t').toString()}, midsupport=${(args[1]==='t').toString()}, frontslayer=${(args[2]==='t').toString()} WHERE discordid='${msg.author.id}';`);
+                await DatabaseUtilities.INSTANCE.setRoles(msg, args);
+                DiscordInterfaceUtilities.INSTANCE.getRole(msg.guild, rolesPositioning.ab).then(abRole=> (args[0]==='t'?msg.member.roles.add(abRole):msg.member.roles.remove(abRole)));
+                DiscordInterfaceUtilities.INSTANCE.getRole(msg.guild, rolesPositioning.ms).then(msRole=> (args[1]==='t'?msg.member.roles.add(msRole):msg.member.roles.remove(msRole)));
+                DiscordInterfaceUtilities.INSTANCE.getRole(msg.guild, rolesPositioning.fs).then(fsRole=> (args[2]==='t'?msg.member.roles.add(fsRole):msg.member.roles.remove(fsRole)));
                 const embed = new Discord.MessageEmbed()
                     .setColor(defaultColor)
-                    .setTitle("Now your current state is: ")
+                    .setTitle("Now your current roles are: ")
                     .setTimestamp(Date.now())
-                    .addField(`Anchor/Back <:${playRoles.ab.name}:${playRoles.ab.id}>`,(args[0]==='t').toString(), false)
-                    .addField(`Mid/Support <:${playRoles.ms.name}:${playRoles.ms.id}>`,(args[1]==='t').toString(), false)
-                    .addField(`Front/Slayer <:${playRoles.fs.name}:${playRoles.fs.id}>`,(args[2]==='t').toString(), false); /*https://gist.github.com/scragly/b8d20aece2d058c8c601b44a689a47a0#:~:text=You%20can%20get%20a%20custom,being%20the%20image%20file%20name.&text=All%20bots%20can%20use%20custom,server%2C%20just%20like%20Nitro%20users.*/
+                    .addField(`Anchor/Back <:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>`,(args[0]==='t').toString(), false)
+                    .addField(`Mid/Support <:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`,(args[1]==='t').toString(), false)
+                    .addField(`Front/Slayer <:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`,(args[2]==='t').toString(), false); /*https://gist.github.com/scragly/b8d20aece2d058c8c601b44a689a47a0#:~:text=You%20can%20get%20a%20custom,being%20the%20image%20file%20name.&text=All%20bots%20can%20use%20custom,server%2C%20just%20like%20Nitro%20users.*/
                 return msg.channel.send(embed);
             }catch(err){
                 return console.log(err);

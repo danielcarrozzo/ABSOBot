@@ -1,7 +1,10 @@
 module.exports = {
   name: 'reload',
+  display: false,
   aliases: ['r'],
   description: 'Reloads a command',
+  usage: "say",
+  warning: "This could be used just by KraY",
   execute(msg, args) {
     if(msg.author.id==="246710308817731585"){
       if (!args.length) return msg.channel.send(`You didn't pass any command to reload, ${msg.author}!`);

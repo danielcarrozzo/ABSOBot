@@ -85,10 +85,10 @@ client.on('message', msg => {
 
     try {
       //client.commands.get(command).execute(msg, args);
-      command.execute(msg, args);//It uses dinamically the quantity of arguments, execute/run
+        command.execute(msg, args);//It uses dinamically the quantity of arguments, execute/run
     } catch(error){
+        msg.channel.send('There was an error trying to execute that command!');
         console.error(error);
-        msg.reply('there was an error trying to execute that command!');
     }
   }
 })

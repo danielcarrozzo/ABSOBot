@@ -1,20 +1,21 @@
 const Discord = require('discord.js');
-const { prefix } = require('../config.json');
+const { prefix, defaultColor } = require('../config.json');
 
 module.exports = {
 	name: 'help',
 	display: true,
-	description: 'View commands usable',
 	aliases: ['h', 'commands'],
-	usage: '[command name]',
 	cooldown: 5,
+	description: 'View commands usable',
+	usage: '[command name]',
 	execute(msg, args) {
-		var embed=new Discord.MessageEmbed();
+		let embed=new Discord.MessageEmbed();
 		const { commands } = msg.client;
 		if (!args.length) {
 			//embed.setDescription('Hi luv 🤍!');
-			embed.addField('These are my commands right now:', commands.map(command => command.name).join(', '));
-			embed.setFooter(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`);
+			embed.addField('These are my commands right now:', commands.filter(command => command.display).map(command => command.name).join(', '))
+				.setFooter(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`)
+				.setColor(defaultColor);
 
 			/*return msg.author.send(embed)
 				.then(() => {
@@ -34,7 +35,8 @@ module.exports = {
 			return msg.reply('that\'s not a valid command!');
 		}
 
-		embed.setTitle(`**Name:** ${command.name}`);
+		embed.setTitle(`**Name:** ${command.name}`)
+			.setColor(defaultColor);
 
 		if (command.aliases) embed.addField(`**Aliases:**`, `${command.aliases.join(', ')}`);
 		if (command.description) embed.addField(`**Description:**`, `${command.description}`);

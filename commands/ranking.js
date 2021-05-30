@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const dbUtilities = require("../utilities/dbUtilities");
-const dsiUtilities = require("../utilities/dsiUtilities");
+const DatabaseUtilities = require("../utilities/dbUtilities");
+const DiscordInterfaceUtilities = require("../utilities/dsiUtilities");
 const {defaultColor} = require("../config.json");
 
 ranking =
@@ -20,10 +20,10 @@ ranking =
                 let indexG;
                 //3) 32: 3\n
                 try{//It's going to be always someone for every week, example: someone joins in 6th week? they are added 3 lines (or 8?)
-                    const ranking=await dbUtilities.INSTANCE.getRanking(args[0]);
+                    const ranking=await DatabaseUtilities.INSTANCE.getRanking(args[0]);
                     await Promise.all(
                         ranking.map(async (row, index) => {
-                            dsiUtilities.INSTANCE.getUser(row.discordid).then(async user => {
+                            DiscordInterfaceUtilities.INSTANCE.getUser(row.discordid).then(async user => {
                                 //check if it's admin or winner of a week so ()
                                 if(index%capability===0){
                                     toSend='';
@@ -53,8 +53,11 @@ ranking =
 
 module.exports = {
     name: 'ranking',
+    display: false,
     aliases: ['ra'],
-    description: 'Show the list as it is',
+    description: 'Show ranking',
+    usage: "5",
+    warning: "This is just a way to get it whenever you want",
     execute: async function(msg, args) {
         await ranking(msg.channel, args);
     },
