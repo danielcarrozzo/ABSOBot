@@ -12,11 +12,11 @@ module.exports = {
 		let embed=new Discord.MessageEmbed();
 		const { commands } = msg.client;
 		if (!args.length) {
-			//embed.setDescription('Hi luv 🤍!');
-			embed.addField('These are my commands right now:', commands.filter(command => command.display).map(command => command.name).join(', '))
+			embed.addField('These are my commands right now:', commands.filter(command => command.display).map(command => command.name).join('\n'))
 				.setFooter(`\nYou can send \`${prefix}help [command name]\` to get info on a specific command!`)
 				.setColor(defaultColor);
 
+			return msg.channel.send(embed);
 			/*return msg.author.send(embed)
 				.then(() => {
 					if (msg.channel.type === 'dm') return;
@@ -26,7 +26,6 @@ module.exports = {
 					console.error(`Could not send help DM to ${msg.author.tag}.\n`, error);
 					msg.reply('it seems like I can\'t DM you! Do you have DMs disabled?');
 				});*/
-			return msg.channel.send(embed);
 		}
 		const name = args[0].toLowerCase();
 		const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));

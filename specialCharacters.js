@@ -13,6 +13,10 @@ module.exports = {
 			"id": "727452644272111644"
 		}
 	},
+	switchIconEmoji:{
+		"name":"switch_icon",
+		"id":"848904373379137557"
+	},
     damn:':regional_indicator_d::regional_indicator_a::regional_indicator_m::regional_indicator_n:',
     loser:':regional_indicator_l::regional_indicator_o::regional_indicator_s::regional_indicator_e::regional_indicator_r:',
 	clown:'<a:clownanimated:848504004178739252>',

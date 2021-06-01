@@ -1,8 +1,3 @@
-/*https://www.postgresqltutorial.com/ */
-
-/*The system keeps scores and for every match and penalty added will add, or remove points
-  They could always be calculated again*/
-
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE BanReasons(
@@ -156,37 +151,3 @@ CREATE TABLE JoinedIn(
          ON UPDATE CASCADE,
      PRIMARY KEY (UserId, LobbyId)
 );
-
-
-/*CREATE TRIGGER AddScore
-    AFTER INSERT ON Play
-    FOR EACH ROW
-    EXECUTE PROCEDURE add_points();
-
-CREATE FUNCTION add_points(MatchId, PlayerId)
-    LANGUAGE plpgsql
-    AS
-$$
-DECLARE
-BEGIN
-    UPDATE Ranking
-        SET Points=Points+(MatchId+)
-END;
-$$;*/
-
-
-/*check if switchcodes are right: https://www.sqlservercentral.com/forums/topic/explanation-of-like-0-9
-  https://docs.microsoft.com/en-us/previous-versions/sql/sql-server-2008-r2/ms179859(v=sql.105)?redirectedfrom=MSDN*/
-
-/*Numeric types: https://www.postgresql.org/docs/9.1/datatype-numeric.html*/
-/*Generated always as identity: https://www.postgresqltutorial.com/postgresql-identity-column/#:~:text=The%20GENERATED%20ALWAYS%20instructs%20PostgreSQL,value%20for%20the%20identity%20column.*/
-/*posting_date DATE NOT NULL DEFAULT CURRENT_DATE
-  https://www.postgresqltutorial.com/postgresql-date/
- */
-/*Compare ban: https://www.postgresql.org/docs/8.0/functions-datetime.html*/
-
-/* date time postgresql
-   https://www.postgresql.org/docs/9.1/datatype-datetime.html
-   https://www.postgresql.org/docs/11/datatype-datetime.html
-   https://www.postgresql.org/docs/9.6/functions-datetime.html
-*/

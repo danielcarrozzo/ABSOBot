@@ -5,8 +5,6 @@ const {defaultColor} = require("../config.json");
 
 ranking =
     async(channel, args) =>{
-        //await dsi_utilities.INSTANCE.dsi_show_ranking(msg, msg.channel, args)
-        //const channel = await this.dsi_get_channel(channelid);
         if (args.length===0) {
             return channel.send(`You need to specify the list number`);
         }else if(args.length===1){

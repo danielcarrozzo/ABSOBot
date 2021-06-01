@@ -2,3 +2,4 @@
 macello
 node_modules
 .env
+SQL/default_data.sql

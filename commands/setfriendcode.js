@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const DatabaseUtilities = require("../utilities/dbUtilities");
 const { defaultColor, friendcode } = require('../config.json');
+const { switchIconEmoji } = require('../specialCharacters');
 
 module.exports={
     name: 'setfriendcode',
@@ -32,7 +33,7 @@ module.exports={
                 }
                 await DatabaseUtilities.INSTANCE.setFriendCode(msg.author.id, fc);
                 embed.setTitle("Now your current friend code is: ")
-                    .addField("Nintendo Switch /*emoji*/", codeToStamp, false)
+                    .addField(`Nintendo Switch  <:${switchIconEmoji.name}:${switchIconEmoji.id}>`, codeToStamp, false)
                 return msg.channel.send(embed);
             }else{
                 embed.setTitle("Your friend code hasn't been written in a proper way.")

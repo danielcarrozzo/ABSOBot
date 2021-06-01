@@ -1,5 +1,5 @@
-const DatabaseUtilities = require("../utilities/dbUtilities");
 const Discord = require("discord.js");
+const DatabaseUtilities = require("../utilities/dbUtilities");
 const { defaultColor } =require("../config.json");
 
 module.exports = {

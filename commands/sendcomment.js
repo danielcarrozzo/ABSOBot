@@ -1,8 +1,7 @@
-
 const DiscordInterfaceUtilities = require("../utilities/dsiUtilities");
 const DatabaseUtilities = require("../utilities/dbUtilities");
 const Discord = require("discord.js");
-const { defaultColor, numberPlayersPerMatch, channelComments } =require("../config.json");
+const { defaultColor, numberPlayersPerMatch } =require("../config.json");
 
 module.exports = {
     name: 'sendcomment',

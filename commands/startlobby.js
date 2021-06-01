@@ -20,7 +20,8 @@ module.exports = {
     }
 }
 
-createMatch=async function(msg){
+createMatch =
+    async function(msg){
     //Create lobby message
     let embeded = new Discord.MessageEmbed()
         .setTitle("Lobby")
@@ -57,7 +58,7 @@ createMatch=async function(msg){
             return false;
         }
         //Check if there is a free lobby
-        freeLobby=await DatabaseUtilities.INSTANCE.getStartableLobbies();
+        freeLobby = await DatabaseUtilities.INSTANCE.getStartableLobbies();
         console.log(freeLobby);
         if(!freeLobby){
             reaction.users.remove(user.id);
@@ -74,14 +75,15 @@ createMatch=async function(msg){
         await lobbymsg.edit(embeded);
     });
 
+
     collector.on('remove', async (reaction, user) =>{
-        embeded = new Discord.MessageEmbed(embeded).spliceFields(0, 8, embeded.fields.filter(async (field) => field.name !== (await DiscordInterfaceUtilities.INSTANCE.getUser(user.id)).tag));
+        const p=(await DiscordInterfaceUtilities.INSTANCE.getUser(user.id));
+        embeded = new Discord.MessageEmbed(embeded).spliceFields(0, 8, embeded.fields.filter(field => field.name !== p.tag));//Can't use promises in filter or for filter
         await lobbymsg.edit(embeded);
     });
 
     collector.on('end', async collected => {
-        embeded.setFooter(`Match started in ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60/60)} hours ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60%60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);
-        //await lobbymsg.edit(embeded);
+        embeded.setFooter(`Match started in ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60/60)} hours ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60%60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);//Gives problem if named embed or embedded
 
         //Send another message
         createMatch(lobbymsg);
@@ -143,37 +145,12 @@ createMatch=async function(msg){
                 }
             })
         )
-        //const lobby_channel = await this.dsi_get_channel(this.dsi_get_lobby_channel(lobby));
         //await lobby_channel.bulkDelete(99, true);
 
+        //Send the message in the lobby chat
         embed.addField("Team Alpha", alphaTeamString);
         embed.addField("Team Beta", betaTeamString);
         const channelLobby = await DiscordInterfaceUtilities.INSTANCE.getChannel(lobbyData.channel);
         return channelLobby.send(embed);
-        //return startingMatch(msg, );//gives the ids
     });
 }
-
-
-        //await lobbymsg.react('✅');
-
-        //const res = await db_utilities.INSTANCE.db_query_runner('SELECT * FROM Ranking INNER JOIN Users ON ranking.userid = users.userid WHERE WeekId='+args[0]+' ORDER BY Points ASC;');
-        /*await Promise.all(
-            res.rows.map(async (row, index) => {
-                await this.dsi_get_user(row.discordid).then(async user => {
-                    //check if it's admin or winner of a week so ()
-                    if(index%capability===0){
-                        toSend='';
-                    }
-                    toSend += (index+1)+'. '+ user.username + ': ' + row.points + '\r\n';
-                    if(index%capability===capability-1){
-                        embed.addField('Week: '+args[0], toSend, false);
-                        channel.send(embed);
-                        indexG=index;
-                    }
-                });
-            })
-        );*/
-        //matchmaking
-        //pusho la query
-        //ruoli agli 8

@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const DatabaseUtilities = require("../utilities/dbUtilities");
 const DiscordInterfaceUtilities = require("../utilities/dsiUtilities");
-const { channelPastMatches, defaultColor, channelRanking, discordServer, numberPlayersPerMatch, discordGuild/*, number_lobbies*/ } = require('../config.json');
+const { channelPastMatches, defaultColor, channelRanking, discordServer, numberPlayersPerMatch } = require('../config.json');
 const { positioningEmojis } = require('../specialCharacters');
 
 module.exports = {
@@ -83,11 +83,11 @@ endMatch = async (msg, args, lobby, resultsEmbed, event, affected) => {
 
     //Collection of partecipants reactions
     const filter = async (reaction, user) => {
-        //if(user===msg.author){
-        //    reaction.users.remove(user.id);
-        //    (await user.createDM()).send(`You can't react to your message, wait the others`);
-        //    return false;
-        //}
+        if(user===msg.author){
+            reaction.users.remove(user.id);
+            (await user.createDM()).send(`You can't react to your message, wait the others`);
+            return false;
+        }
         if (!((await DatabaseUtilities.INSTANCE.isUserInALobby(user.id)) === lobby)) {
             reaction.users.remove(user.id);
             (await user.createDM()).send(`You are not in this lobby, why are you seeing this channel?!`);
@@ -179,21 +179,6 @@ endMatch = async (msg, args, lobby, resultsEmbed, event, affected) => {
         repostRanking([info.currentweek]);
     });
 }
-
-    /*if(){
-        Collector with reactions
-            Promise.all
-        member.roles.remove(this.dsi_get_team_roles(roles_lobbies))
-
-        db_utilities
-    else
-        //pusho la query
-        //tolgo i permessi
-        //
-        this.dsi_repost_ranking(msg, [currentWeek]);
-        //empty chat to don't show users what it has been written. At the end cause dsi_show_ranking delete the message for better styling. I can bring it out but I prefer the deletion only if all worked in that function.
-    }*/
-
 
 repostRanking =
     async (args) => {

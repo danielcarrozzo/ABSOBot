@@ -109,8 +109,6 @@ class DatabaseUtilities {
                                                         FROM Users JOIN JoinedIn ON Users.UserId = JoinedIn.UserId
                                                         WHERE LobbyId=${lobby};`)
 
-    getBanReasonInfo = async banReasonId => (await this.queryRunner(`SELECT * FROM BanReasons WHERE BanReasonId=${banReasonId}`))[0];
-
     getMatchesToPlay =
         async () => (await this.getRulementRules((await this.getInfo()).currentrulement)).matchestoplay;
 
@@ -121,13 +119,11 @@ class DatabaseUtilities {
                                                             FROM (Info JOIN Ranking ON CurrentWeek=WeekId) JOIN Users ON Ranking.UserId=Users.UserId
                                                             WHERE DiscordId='${discordId}';`))[0];
 
+    getPenaltiesOfTheWeek =
+        async (participant, weekId) => await this.queryRunner(`SELECT * FROM Penalties JOIN Matches ON Penalties.MatchId=Matches.MatchId WHERE UserId='${participant}' AND WeekId=${weekId}`)
 
-
-
-    //const matchesPlayedTodayPromise = this.queryRunner(...
-    //const info = await this.getInfo();
-    //const rulement = await this.getRulementRules(info.currentrulement);
-    //const matchesPlayedToday = await matchesPlayedTodayPromise;
+    existsBanReason =
+        async banReasonId => await this.queryRunner(`SELECT * FROM BanReasons WHERE BanReasonId=${banReasonId}`);
 
     addPoints =
         async (participant, args) => {
@@ -135,7 +131,7 @@ class DatabaseUtilities {
             const rulement = await this.getRulementRules(info.currentrulement);
             return this.queryRunner(`UPDATE Ranking
                                             SET Points=Points+
-                                                       ${(participant.team?args[0]:args[1])*rulement.wonmatchpoint + (args[0]+args[1]<rulement.matchestoplay?((args[0]>args[1]&&participant.team)||(args[0]<args[1]&&!participant.team)?rulement.winbonus:0):0)}
+                                                       ${(participant.team?args[0]:args[1])*rulement.wonmatchpoint + (args[0]+args[1]===rulement.matchestoplay?((args[0]>args[1]&&participant.team)||(args[0]<args[1]&&!participant.team)?rulement.winbonus:0):0)}
                                             WHERE UserId='${participant.userid}' AND WeekId=${info.currentweek}`);
         }
 
@@ -149,9 +145,6 @@ class DatabaseUtilities {
                                             WHERE UserId='${participant}' AND WeekId=${info.currentweek}`)
         }
 
-    getPenaltiesOfTheWeek =
-        async (participant, weekId) => await this.queryRunner(`SELECT * FROM Penalties JOIN Matches ON Penalties.MatchId=Matches.MatchId WHERE UserId='${participant}' AND WeekId=${weekId}`)
-
     setLobbyStatus =
         async (lobbyid, status) => await this.queryRunner(`UPDATE Lobbies
                                                             SET Status=${status}
@@ -161,8 +154,9 @@ class DatabaseUtilities {
 
     setInfo = async args => await this.queryRunner(`UPDATE Info SET CurrentWeek=${args[0]}, InProgress=${args[1]}, CurrentRulement=${args[2]}`);
 
-    existsBanReason =
-        async banReasonId => await this.queryRunner(`SELECT * FROM BanReasons WHERE BanReasonId=${banReasonId}`);
+    setFriendCode = async (discordId, friendCode) => await this.queryRunner(`UPDATE Users SET FriendCode=${friendCode} WHERE DiscordId='${discordId}';`);
+
+    setComment = async (lobbyId, comment) => await this.queryRunner(`UPDATE Lobbies SET Comment='${comment}' WHERE LobbyId=${lobbyId};`)
 
     insertPlayer = async discordUserId => await this.queryRunner(`INSERT INTO Users(DiscordId) VALUES('${discordUserId}') RETURNING UserId;`)
 
@@ -181,24 +175,15 @@ class DatabaseUtilities {
 
     insertPenalty = async (userId, matchId) => await this.queryRunner(`INSERT INTO Penalties(UserId, MatchId) VALUES('${userId}', '${matchId}')`)
 
-    setFriendCode = async (discordId, friendCode) => await this.queryRunner(`UPDATE Users SET FriendCode=${friendCode} WHERE DiscordId='${discordId}';`);
-
-    setComment = async (lobbyId, comment) => await this.queryRunner(`UPDATE Lobbies SET Comment='${comment}' WHERE LobbyId=${lobbyId};`)
-
-    deletePlayersInLobby = async lobby => await this.queryRunner(`DELETE FROM JoinedIn WHERE LobbyId=${lobby}`)
-
     insertBanned = async (discordUserId, banReasonId, period, comment) =>{
         let userId = (await this.getUserByDiscordId(discordUserId)).userid;
         if(userId === undefined){
             userId = await this.insertPlayer(discordUserId);
         }
-        //if(period === 'default'){
-        //    period = (await this.getBanReasonInfo(banReasonId)).defaultbantime.years;
-        //    console.log(period);
-        //    console.log((await this.getBanReasonInfo(banReasonId)))
-        //}
         await this.queryRunner(`INSERT INTO Banned(UserId, BanReasonId, Start, Period, Comment) VALUES('${userId}', ${banReasonId}, default, ${(period==='default'?`(SELECT defaultbantime FROM BanReasons WHERE BanReasonId=${banReasonId})`:`'${period}'`)}, '${comment}')`)
     }
+
+    deletePlayersInLobby = async lobby => await this.queryRunner(`DELETE FROM JoinedIn WHERE LobbyId=${lobby}`)
 }
 
 module.exports = DatabaseUtilities;
