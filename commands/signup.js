@@ -1,6 +1,6 @@
 const DatabaseUtilities = require("../utilities/dbUtilities");
 const DiscordInterfaceUtilities = require("../utilities/dsiUtilities");
-const { roleEligible, roleParticipants } = require("../config.json");
+const { channelSendRanks, roleEligible, roleParticipants } = require("../config.json");
 
 module.exports={
     name: 'signup',
@@ -10,7 +10,7 @@ module.exports={
     description: "Subscribe to the tournament",
     usage: "",
     warning: "If you change account, come out and come in from the server pls ask help to admins",
-    execute: async function(msg, args){
+    execute: async function(msg){
         console.log(msg.member.roles.cache);
         if(msg.member.roles.cache.has(roleEligible)) {
             //Add to database
@@ -32,7 +32,7 @@ module.exports={
 
             msg.channel.send('Signed up!');
         }else{
-            msg.channel.send(`You don't seems to be eligible to play this tournament yest. Pls send your ranks in <#>`)
+            msg.channel.send(`You don't seems to be eligible to play this tournament yet. Pls send your ranks in <#${channelSendRanks}>`)
         }
     }
 }
