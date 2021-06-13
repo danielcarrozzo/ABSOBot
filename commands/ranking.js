@@ -21,18 +21,18 @@ ranking =
                     const ranking=await DatabaseUtilities.INSTANCE.getRanking(args[0]);
                     await Promise.all(
                         ranking.map(async (row, index) => {
-                            DiscordInterfaceUtilities.INSTANCE.getUser(row.discordid).then(async user => {
-                                //check if it's admin or winner of a week so ()
-                                if(index%capability===0){
-                                    toSend='';
-                                }
-                                toSend += (index+1)+'. '+ user.username + ': ' + row.points + '\r\n';
-                                if(index%capability===capability-1){
-                                    embed.addField(`Week: ${args[0]}`, toSend, false);
-                                    await channel.send(embed);
-                                    indexG=index;
-                                }
-                            });
+                            const user = await DiscordInterfaceUtilities.INSTANCE.getUser(row.discordid);
+                            //check if it's admin or winner of a week so ()
+                            console.log(user);
+                            if(index%capability===0){// multiple messages
+                                toSend='';
+                            }
+                            toSend += (index+1)+'. '+ user.username + ': ' + row.points + '\r\n';
+                            if(index%capability===capability-1){
+                                embed.addField(`Week: ${args[0]}`, toSend, false);
+                                await channel.send(embed);
+                                indexG=index;
+                            }
                         })
                     );
                     embed.addField(`Week: ${args[0]}`, toSend, false);
