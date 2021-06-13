@@ -16,7 +16,7 @@ module.exports={
     warning: "This affect the matchmaking, you don't want 3 snipers vs 0 so use it properly.",
     execute: async function(msg, args){
         if(args.length===3){
-            try {
+            if(await DatabaseUtilities.INSTANCE.getUserByDiscordId(msg.author.id)){
                 await DatabaseUtilities.INSTANCE.setRoles(msg, args);
                 DiscordInterfaceUtilities.INSTANCE.getRole(msg.guild, rolesPositioning.ab).then(abRole=> (args[0]==='t'?msg.member.roles.add(abRole):msg.member.roles.remove(abRole)));
                 DiscordInterfaceUtilities.INSTANCE.getRole(msg.guild, rolesPositioning.ms).then(msRole=> (args[1]==='t'?msg.member.roles.add(msRole):msg.member.roles.remove(msRole)));
@@ -29,8 +29,8 @@ module.exports={
                     .addField(`Mid/Support <:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`,(args[1]==='t').toString(), true)
                     .addField(`Front/Slayer <:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`,(args[2]==='t').toString(), true); /*https://gist.github.com/scragly/b8d20aece2d058c8c601b44a689a47a0#:~:text=You%20can%20get%20a%20custom,being%20the%20image%20file%20name.&text=All%20bots%20can%20use%20custom,server%2C%20just%20like%20Nitro%20users.*/
                 return msg.channel.send(embed);
-            }catch(err){
-                return console.log(err);
+            }else{
+                return msg.channel.send(`You are not signed up yet, pls type ${prefix}su`)
             }
         }
         return msg.channel.send("It's ok, you don't know which role you have but not for this reason you need to put less or more than 3 arguments");

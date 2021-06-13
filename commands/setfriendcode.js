@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const DatabaseUtilities = require("../utilities/dbUtilities");
-const { defaultColor, friendcode } = require('../config.json');
+const { prefix, defaultColor, friendcode } = require('../config.json');
 const { switchIconEmoji } = require('../specialCharacters');
 
 module.exports={
@@ -12,7 +12,7 @@ module.exports={
     usage: "0123",
     warning: "You can type it just in this ways: 012345678910, 0123-4567-8910 and 0123 4567 8910",
     execute: async function(msg, args){
-        try {
+        if(await DatabaseUtilities.INSTANCE.getUserByDiscordId(msg.author.id)){
             let fc;
             if(args.length===1){
                 fc=args[0];
@@ -39,8 +39,8 @@ module.exports={
                 embed.setTitle("Your friend code hasn't been written in a proper way.")
                 return msg.channel.send(embed);
             }
-        }catch(err){
-            return console.log(err);
+        }else{
+            return msg.channel.send(`You are not signed up yet, pls type ${prefix}su`)
         }
     }
 }
