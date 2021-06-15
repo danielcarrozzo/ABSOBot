@@ -9,9 +9,9 @@ module.exports = {
     display: true,
     aliases: [ "em" ],
     cooldown: 5,
-    description: "Set the results of a match",
-    usage: "2 3",
-    warning: "Comments and events relative to matches has to be validated by admins",
+    description: "Set the results of a match.\nCurrent kinds of events:\nabandonment/ab",
+    usage: "[Score Team Alpha] [Score Team Beta] [Eventually events]",
+    warning: "In case of problems ping admins",
     execute: async (msg, args) => {
         return endingMatch(msg, args);
     }

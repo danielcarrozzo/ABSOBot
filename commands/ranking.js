@@ -21,7 +21,7 @@ ranking =
                     const ranking=await DatabaseUtilities.INSTANCE.getRanking(args[0]);
                     await Promise.all(
                         ranking.map(async (row, index) => {
-                            const user = await DiscordInterfaceUtilities.INSTANCE.getUser(row.discordid);
+                            const user = await DiscordInterfaceUtilities.INSTANCE.getUser(row.discordid);//Previous version was faster with then but at first it has an error...
                             //check if it's admin or winner of a week so ()
                             console.log(user);
                             if(index%capability===0){// multiple messages

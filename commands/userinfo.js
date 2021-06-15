@@ -6,7 +6,7 @@ const { positioningEmojis, switchIconEmoji } = require('../specialCharacters');
 
 module.exports = {
     name: 'userinfo',
-    display: false,
+    display: true,
     aliases: [ "ui" ],
     cooldown: 5,
     description: "Get user info. You can choose to not mention nobody, to ping one or more.",

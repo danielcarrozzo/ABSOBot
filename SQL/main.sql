@@ -151,3 +151,6 @@ CREATE TABLE JoinedIn(
          ON UPDATE CASCADE,
      PRIMARY KEY (UserId, LobbyId)
 );
+
+CREATE UNIQUE INDEX discordIds
+    ON Users (discordId);

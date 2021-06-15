@@ -1,6 +1,7 @@
 module.exports = { //TODO Substitute with the function
 	name: 'prune',
     display: false,
+    aliases: ['pr'],
     cooldown: 1,
     description: "Delete some messages",
     usage: "57",
