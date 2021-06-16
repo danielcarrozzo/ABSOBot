@@ -21,7 +21,7 @@ module.exports = {
 }
 
 createMatch =
-    async function(msg){
+    async function (msg) {
     //Create lobby message
     let embeded = new Discord.MessageEmbed()
         .setTitle("Lobby")
@@ -34,25 +34,25 @@ createMatch =
     //Collection of partecipants reactions
     const filter = async (reaction, user) => {
         //Check subscribed
-        if((await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id)) === undefined){
+        if ((await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id)) === undefined) {
             reaction.users.remove(user.id);
             (await user.createDM()).send(`You are not subscribed, why are you seeing this channel?!`);
             return false;
         }
         //Check if it's banned
-        if(await DatabaseUtilities.INSTANCE.isBanned(user.id)){
+        if (await DatabaseUtilities.INSTANCE.isBanned(user.id)) {
             reaction.users.remove(user.id);
             (await user.createDM()).send(`You are banned for a little...`);
             return false;
         }
         //Check if the player can play another match today
-        if(await DatabaseUtilities.INSTANCE.isAtLimitOfMatchesToday(user.id)){
+        if (await DatabaseUtilities.INSTANCE.isAtLimitOfMatchesToday(user.id)) {
             reaction.users.remove(user.id);
             (await user.createDM()).send(`You have already played the max limit of matches today`);
             return false;
         }
         //Check if it's already in a lobby (It's already started and in the database because there is just one message to create a lobby)
-        if(await DatabaseUtilities.INSTANCE.isUserInALobby(user.id)){
+        if (await DatabaseUtilities.INSTANCE.isUserInALobby(user.id)) {
             reaction.users.remove(user.id);
             (await user.createDM()).send(`You are already in a lobby`);
             return false;
@@ -60,15 +60,15 @@ createMatch =
         //Check if there is a free lobby
         freeLobby = await DatabaseUtilities.INSTANCE.getStartableLobbies();
         console.log(freeLobby);
-        if(!freeLobby){
+        if (!freeLobby) {
             reaction.users.remove(user.id);
             msg.channel.send(`Oh damn, someone tried to participate but there are no free lobbies, pls try again later.\nYou can check the status in <#${messagesStatus.free_lobbies}>`);
             return false;
         }
-        return reaction.emoji.name === '✅' /*&& controlli user è iscritto*/ ;// && user.id === message.author.id
+        return reaction.emoji.name === '✅' /*&& controlli user è iscritto*/;// && user.id === message.author.id
     };
 
-    const collector = lobbymsg.createReactionCollector(filter, { dispose: true, max: numberPlayersPerMatch });
+    const collector = lobbymsg.createReactionCollector(filter, {dispose: true, max: numberPlayersPerMatch});
 
     collector.on('collect', async (reaction, user) => {
         embeded = new Discord.MessageEmbed(embeded).addField((await DiscordInterfaceUtilities.INSTANCE.getUser(user.id)).tag, `Current week points: ${(await DatabaseUtilities.INSTANCE.getCurrentRanking(user.id)).points}`);
@@ -76,14 +76,14 @@ createMatch =
     });
 
 
-    collector.on('remove', async (reaction, user) =>{
-        const p=(await DiscordInterfaceUtilities.INSTANCE.getUser(user.id));
+    collector.on('remove', async (reaction, user) => {
+        const p = (await DiscordInterfaceUtilities.INSTANCE.getUser(user.id));
         embeded = new Discord.MessageEmbed(embeded).spliceFields(0, 8, embeded.fields.filter(field => field.name !== p.tag));//Can't use promises in filter or for filter
         await lobbymsg.edit(embeded);
     });
 
     collector.on('end', async collected => {
-        embeded.setFooter(`Match started in ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60/60)} hours ${Math.floor((Date.now()-lobbymsg.createdAt)/1000/60%60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);//Gives problem if named embed or embedded
+        embeded.setFooter(`Match started in ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 / 60 / 60)} hours ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 / 60 % 60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);//Gives problem if named embed or embedded
 
         //Send another message
         createMatch(lobbymsg);
@@ -93,7 +93,7 @@ createMatch =
         await DatabaseUtilities.INSTANCE.setLobbyStatus(lobby, 1);
 
         //Collecting users from database
-        let users=[];
+        let users = [];
         await Promise.all(
             collector.users.map(async (user) => {
                 users.push((await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id)));
@@ -115,32 +115,32 @@ createMatch =
             .setDescription("Teams")
             .setColor(defaultColor)
             .setTimestamp(Date.now());
-        let alphaTeamString="";
-        let betaTeamString="";
+        let alphaTeamString = "";
+        let betaTeamString = "";
 
         //Insert the player in the lobby on db, giving the role and adding it's name to the strings on the message to send in the channel
         await Promise.all(
-            users.map(async (userData)=>{
+            users.map(async (userData) => {
                 const user = await DiscordInterfaceUtilities.INSTANCE.getUser(userData.discordid);
-                try{
+                try {
                     //Add role and add its profile on the embed to send
                     const member = await DiscordInterfaceUtilities.INSTANCE.getMember(discordGuild, userData.discordid);
-                    let codeToStamp="";
-                    if(userData.friendcode){
-                        for(let i=0;i<friendcode.friendcodeSize; i+=friendcode.sectionSize){
-                            codeToStamp+=(i!==0?"-":"")+userData.friendcode.substr(i, friendcode.sectionSize);
+                    let codeToStamp = "";
+                    if (userData.friendcode) {
+                        for (let i = 0; i < friendcode.friendcodeSize; i += friendcode.sectionSize) {
+                            codeToStamp += (i !== 0 ? "-" : "") + userData.friendcode.substr(i, friendcode.sectionSize);
                         }
                     }
-                    if(userData.team){
+                    if (userData.team) {
                         member.roles.add(roleAlpha);
-                        alphaTeamString+=`${user.tag} ${(userData.anchorback?`<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>`:``)} ${(userData.midsupport?`<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`:``)} ${(userData.frontslayer?`<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`:``)}\n${codeToStamp}`
-                    }else{
+                        alphaTeamString += `${user.tag} ${(userData.anchorback ? `<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>` : ``)} ${(userData.midsupport ? `<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>` : ``)} ${(userData.frontslayer ? `<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>` : ``)}\n${codeToStamp}\n`
+                    } else {
                         member.roles.add(roleBeta);
-                        betaTeamString+=`${user.tag} ${(userData.anchorback?`<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>`:``)} ${(userData.midsupport?`<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`:``)} ${(userData.frontslayer?`<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`:``)}\n${codeToStamp}`
+                        betaTeamString += `${user.tag} ${(userData.anchorback ? `<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>` : ``)} ${(userData.midsupport ? `<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>` : ``)} ${(userData.frontslayer ? `<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>` : ``)}\n${codeToStamp}`
                     }
                     //Insert in Joined In
                     DatabaseUtilities.INSTANCE.insertJoinedIn(userData.userid, lobby, userData.team);
-                }catch(err){
+                } catch (err) {
                     console.log(err);
                 }
             })
@@ -151,6 +151,7 @@ createMatch =
         embed.addField("Team Alpha", alphaTeamString);
         embed.addField("Team Beta", betaTeamString);
         const channelLobby = await DiscordInterfaceUtilities.INSTANCE.getChannel(lobbyData.channel);
-        return channelLobby.send(embed);
+        channelLobby.send(embed);
+        return channelLobby.send(`<@${lobbyData.alpha}> <@${lobbyData.beta}>`)
     });
 }

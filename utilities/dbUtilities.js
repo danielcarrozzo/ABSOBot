@@ -129,9 +129,13 @@ class DatabaseUtilities {
         async (participant, args) => {
             const info = (await this.getInfo());
             const rulement = await this.getRulementRules(info.currentrulement);
+            args[0] = parseInt(args[0]);
+            args[1] = parseInt(args[1]);
             return this.queryRunner(`UPDATE Ranking
                                             SET Points=Points+
-                                                       ${(participant.team?args[0]:args[1])*rulement.wonmatchpoint + (args[0]+args[1]===rulement.matchestoplay?((args[0]>args[1]&&participant.team)||(args[0]<args[1]&&!participant.team)?rulement.winbonus:0):0)}
+                                                       ${(participant.team?args[0]:args[1])*rulement.wonmatchpoint +
+                                                       (args[0]+args[1]===rulement.matchestoplay? //So they made all the matches
+                                                               ((args[0]>args[1]&&participant.team)||(args[0]<args[1]&&!participant.team)?rulement.winbonus:0):0)}
                                             WHERE UserId='${participant.userid}' AND WeekId=${info.currentweek}`);
         }
 
