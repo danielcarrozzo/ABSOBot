@@ -48,7 +48,7 @@
         "ms": "730053773807976538",
         "fs": "730053673576693771"
     },
-    "numberPlayersPerMatch": 2,
+    "numberPlayersPerMatch": 8,
     "friendcode": {
         "friendcodeSize": 12,
         "sectionSize" : 4
