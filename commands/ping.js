@@ -15,7 +15,7 @@ module.exports = {
     botMsg.edit({ embed: {
     title: "📶 Ping",
     description: [
-      "**Server** (**from KraY's G14**): `" + (botMsg.createdAt - msg.createdAt) + "ms`",
+      "**Server** (**Heroku hosting**): `" + (botMsg.createdAt - msg.createdAt) + "ms`",
       "**API**: `" + Math.round(DiscordInterfaceUtlities.INSTANCE.client.ws.ping) + "ms`",
       "**Uptime**: `" + ExternalUtilities.msToTime(DiscordInterfaceUtlities.INSTANCE.client.uptime) + "`",
     ].join("\n"),

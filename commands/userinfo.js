@@ -41,9 +41,9 @@ sendProfile =
                 .setColor(defaultColor)
                 .addField("Id", user.userid)
                 .addField(`Nintendo Switch  <:${switchIconEmoji.name}:${switchIconEmoji.id}>`, (codeToStamp===""?'Not inserted yet':codeToStamp), false)//ask if it's oke or not
-                .addField(`Anchor/Back <:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>`, user.anchorback.toString(), true)
-                .addField(`Mid/Support <:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`, user.midsupport.toString(), true)
-                .addField(`Front/Slayer <:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`, user.frontslayer.toString(), true);
+                .addField(`Anchor/Back <:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>`, (user.anchorback!==null?user.anchorback.toString():"Not inserted yet"), true)
+                .addField(`Mid/Support <:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>`, (user.midsupport!==null?user.midsupport.toString():"Not inserted yet"), true)
+                .addField(`Front/Slayer <:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>`, (user.frontslayer!==null?user.frontslayer.toString():"Not inserted yet"), true);
             channel.send(embed);
         }else{
             channel.send(`User ${userTag} is not subscribed`);

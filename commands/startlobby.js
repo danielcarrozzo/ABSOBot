@@ -15,20 +15,22 @@ module.exports = {
     warning: "",
     execute: async function(msg, args) {
         if(await DatabaseUtilities.INSTANCE.isAdmin(msg.author.id)){
-            return createMatch(msg);
+            const channelmsg = msg.channel;
+            msg.delete();
+            return createMatch(channelmsg);
         }
     }
 }
 
 createMatch =
-    async function (msg) {
+    async function (channelmsg) {
     //Create lobby message
     let embeded = new Discord.MessageEmbed()
         .setTitle("Lobby")
         .setDescription("Add a reaction ✅ to partecipate")
         .setColor(defaultColor)
         .setTimestamp(Date.now());
-    const lobbymsg = await msg.channel.send(embeded);
+    const lobbymsg = await channelmsg.send(embeded);
     await lobbymsg.react('✅');
 
     //Collection of partecipants reactions
@@ -83,75 +85,82 @@ createMatch =
     });
 
     collector.on('end', async collected => {
-        embeded.setFooter(`Match started in ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 / 60 / 60)} hours ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 / 60 % 60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);//Gives problem if named embed or embedded
+        if(true) {//TODO collected > 8
+            setTimeout(async () => { //Idk, in the past it doesn't have problems but cause async I think collected comes after this and I got 1, 1+time/1+2+time, 1+2 instead of 1, 1+2, 1+2+time
+                embeded = (new Discord.MessageEmbed(embeded)).setFooter(`Match started in ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 / 60 / 60)} hours ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 / 60 % 60)} minutes and ${Math.floor((Date.now() - lobbymsg.createdAt) / 1000 % 60 % 60)} seconds!`);//Gives problem if named embed or embedded
+                await lobbymsg.edit(embeded);
+            }, 100);
 
-        //Send another message
-        createMatch(lobbymsg);
+            //Send another message
+            createMatch(lobbymsg);
 
-        //Take a lobby
-        const lobby = await DatabaseUtilities.INSTANCE.getStartableLobbies(); //Semaphore if I haven't just one message for create a lobby and a check if there are not (now I make it when you react)
-        await DatabaseUtilities.INSTANCE.setLobbyStatus(lobby, 1);
+            //Take a lobby
+            const lobby = await DatabaseUtilities.INSTANCE.getStartableLobbies(); //Semaphore if I haven't just one message for create a lobby and a check if there are not (now I make it when you react)
+            await DatabaseUtilities.INSTANCE.setLobbyStatus(lobby, 1);
 
-        //Collecting users from database
-        let users = [];
-        await Promise.all(
-            collector.users.map(async (user) => {
-                users.push((await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id)));
-            })
-        )
+            //Collecting users from database
+            let users = [];
+            await Promise.all(
+                collector.users.map(async (user) => {
+                    users.push((await DatabaseUtilities.INSTANCE.getUserByDiscordId(user.id)));
+                })
+            )
 
-        //Matchmaking
-        users = wonderfulMatchmaking(users);
+            //Matchmaking
+            users = wonderfulMatchmaking(users);
 
-        //Get lobby data and Discord server platforms
-        const lobbyData = DiscordInterfaceUtilities.INSTANCE.getLobbyData(lobby);
-        const discordGuild = await DiscordInterfaceUtilities.INSTANCE.getGuild(discordServer);
-        const roleAlpha = await DiscordInterfaceUtilities.INSTANCE.getRole(discordGuild, lobbyData.alpha);
-        const roleBeta = await DiscordInterfaceUtilities.INSTANCE.getRole(discordGuild, lobbyData.beta);
+            //Get lobby data and Discord server platforms
+            const lobbyData = DiscordInterfaceUtilities.INSTANCE.getLobbyData(lobby);
+            const discordGuild = await DiscordInterfaceUtilities.INSTANCE.getGuild(discordServer);
+            const roleAlpha = await DiscordInterfaceUtilities.INSTANCE.getRole(discordGuild, lobbyData.alpha);
+            const roleBeta = await DiscordInterfaceUtilities.INSTANCE.getRole(discordGuild, lobbyData.beta);
 
-        //Prepare the message to send in the lobby channel
-        let embed = new Discord.MessageEmbed()
-            .setTitle("Lobby")
-            .setDescription("Teams")
-            .setColor(defaultColor)
-            .setTimestamp(Date.now());
-        let alphaTeamString = "";
-        let betaTeamString = "";
+            //Prepare the message to send in the lobby channel
+            let embed = new Discord.MessageEmbed()
+                .setTitle("Lobby")
+                .setDescription("Teams")
+                .setColor(defaultColor)
+                .setTimestamp(Date.now());
+            let alphaTeamString = "";
+            let betaTeamString = "";
 
-        //Insert the player in the lobby on db, giving the role and adding it's name to the strings on the message to send in the channel
-        await Promise.all(
-            users.map(async (userData) => {
-                const user = await DiscordInterfaceUtilities.INSTANCE.getUser(userData.discordid);
-                try {
-                    //Add role and add its profile on the embed to send
-                    const member = await DiscordInterfaceUtilities.INSTANCE.getMember(discordGuild, userData.discordid);
-                    let codeToStamp = "";
-                    if (userData.friendcode) {
-                        for (let i = 0; i < friendcode.friendcodeSize; i += friendcode.sectionSize) {
-                            codeToStamp += (i !== 0 ? "-" : "") + userData.friendcode.substr(i, friendcode.sectionSize);
+            //Insert the player in the lobby on db, giving the role and adding it's name to the strings on the message to send in the channel
+            await Promise.all(
+                users.map(async (userData) => {
+                    const user = await DiscordInterfaceUtilities.INSTANCE.getUser(userData.discordid);
+                    try {
+                        //Add role and add its profile on the embed to send
+                        const member = await DiscordInterfaceUtilities.INSTANCE.getMember(discordGuild, userData.discordid);
+                        let codeToStamp = "";
+                        if (userData.friendcode) {
+                            for (let i = 0; i < friendcode.friendcodeSize; i += friendcode.sectionSize) {
+                                codeToStamp += (i !== 0 ? "-" : "") + userData.friendcode.substr(i, friendcode.sectionSize);
+                            }
                         }
+                        if (userData.team) {
+                            member.roles.add(roleAlpha);
+                            alphaTeamString += `${user.tag} ${(userData.anchorback ? `<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>` : ``)} ${(userData.midsupport ? `<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>` : ``)} ${(userData.frontslayer ? `<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>` : ``)}\n${codeToStamp === "" ? `No data` : codeToStamp}\n`
+                        } else {
+                            member.roles.add(roleBeta);
+                            betaTeamString += `${user.tag} ${(userData.anchorback ? `<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>` : ``)} ${(userData.midsupport ? `<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>` : ``)} ${(userData.frontslayer ? `<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>` : ``)}\n${codeToStamp === "" ? `No data` : codeToStamp}\n`
+                        }
+                        //Insert in Joined In
+                        DatabaseUtilities.INSTANCE.insertJoinedIn(userData.userid, lobby, userData.team);
+                    } catch (err) {
+                        console.log(err);
                     }
-                    if (userData.team) {
-                        member.roles.add(roleAlpha);
-                        alphaTeamString += `${user.tag} ${(userData.anchorback ? `<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>` : ``)} ${(userData.midsupport ? `<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>` : ``)} ${(userData.frontslayer ? `<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>` : ``)}\n${codeToStamp}\n`
-                    } else {
-                        member.roles.add(roleBeta);
-                        betaTeamString += `${user.tag} ${(userData.anchorback ? `<:${positioningEmojis.ab.name}:${positioningEmojis.ab.id}>` : ``)} ${(userData.midsupport ? `<:${positioningEmojis.ms.name}:${positioningEmojis.ms.id}>` : ``)} ${(userData.frontslayer ? `<:${positioningEmojis.fs.name}:${positioningEmojis.fs.id}>` : ``)}\n${codeToStamp}`
-                    }
-                    //Insert in Joined In
-                    DatabaseUtilities.INSTANCE.insertJoinedIn(userData.userid, lobby, userData.team);
-                } catch (err) {
-                    console.log(err);
-                }
-            })
-        )
-        //await lobby_channel.bulkDelete(99, true);
+                })
+            )
+            //await lobby_channel.bulkDelete(99, true);
 
-        //Send the message in the lobby chat
-        embed.addField("Team Alpha", alphaTeamString);
-        embed.addField("Team Beta", betaTeamString);
-        const channelLobby = await DiscordInterfaceUtilities.INSTANCE.getChannel(lobbyData.channel);
-        channelLobby.send(embed);
-        return channelLobby.send(`<@${lobbyData.alpha}> <@${lobbyData.beta}>`)
+            //Send the message in the lobby chat
+            embed.addField("Team Alpha", alphaTeamString);
+            embed.addField("Team Beta", betaTeamString);
+            const channelLobby = await DiscordInterfaceUtilities.INSTANCE.getChannel(lobbyData.channel);
+            channelLobby.send(embed);
+            return channelLobby.send(`<@&${lobbyData.alpha}> <@&${lobbyData.beta}>`)
+        }else{
+            channelmsg.send(`The collection is not full`);
+        }
     });
 }

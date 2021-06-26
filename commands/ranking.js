@@ -19,6 +19,7 @@ ranking =
                 //3) 32: 3\n
                 try{//It's going to be always someone for every week, example: someone joins in 6th week? they are added 3 lines (or 8?)
                     const ranking=await DatabaseUtilities.INSTANCE.getRanking(args[0]);
+                    //No promise but normal array TODO
                     await Promise.all(
                         ranking.map(async (row, index) => {
                             const user = await DiscordInterfaceUtilities.INSTANCE.getUser(row.discordid);//Previous version was faster with then but at first it has an error...

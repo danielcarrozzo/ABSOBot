@@ -7,7 +7,7 @@ INSERT INTO Weeks(WeekId) VALUES(default);
 INSERT INTO Weeks(WeekId) VALUES(default);
 INSERT INTO Weeks(WeekId) VALUES(default);
 
-INSERT INTO Lobbies(LobbyId, Status) VALUES(default, 0);
+INSERT INTO Lobbies(LobbyId, Status) OVERRIDING SYSTEM VALUE VALUES(1, 0);
 INSERT INTO Lobbies(LobbyId, Status) VALUES(default, 0);
 INSERT INTO Lobbies(LobbyId, Status) VALUES(default, 0);
 INSERT INTO Lobbies(LobbyId, Status) VALUES(default, 0);
